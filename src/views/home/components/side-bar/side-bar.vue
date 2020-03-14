@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <el-menu :router="true">
+    <el-menu-item></el-menu-item>
+    <el-menu-item></el-menu-item>
+  </el-menu>
 </template>
 
 <script lang="ts">

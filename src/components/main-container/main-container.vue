@@ -15,5 +15,6 @@ export default class MainContainer extends Vue {
 <style lang="less" scoped>
 .main-container {
   background-color: #eee;
+  height: 100%;
 }
 </style>

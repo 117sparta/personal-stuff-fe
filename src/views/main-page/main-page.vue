@@ -30,6 +30,7 @@ export default class MainPage extends Vue {
   padding: 5px;
 }
 .ps-main {
-  flex-grow: 1;
+  height: 93%;
+  overflow: hidden;
 }
 </style>
