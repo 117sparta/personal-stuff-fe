@@ -26,7 +26,8 @@ export default class MainPage extends Vue {
   height: 100%;
 }
 .ps-header {
-  height: 8%;
+  height: 5%;
+  padding: 5px;
 }
 .ps-main {
   flex-grow: 1;
