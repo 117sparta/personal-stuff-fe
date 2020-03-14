@@ -1,6 +1,6 @@
 <template>
   <div>
-    这里是第一个页面
+    这里是主页
   </div>
 </template>
 
@@ -8,6 +8,6 @@
 import { Vue, Component } from 'vue-property-decorator';
 
 @Component({})
-export default class MainPage extends Vue {
+export default class Home extends Vue {
 }
 </script>

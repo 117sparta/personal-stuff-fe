@@ -1,18 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import CommonRoutes from './common';
+import beforeEachHooks from './beforeEach';
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: () => import('@/views/main-page')
-  }
-];
-
 const router = new VueRouter({
-  routes
+  routes: CommonRoutes
 });
+
+router.beforeEach(beforeEachHooks);
 
 export default router;
