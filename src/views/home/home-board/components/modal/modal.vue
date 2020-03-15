@@ -1,12 +1,60 @@
 <template>
-  <el-dialog>
-
+  <el-dialog
+    :visible="visible"
+    width="30%"
+    @close="handleClose"
+    :title="`${status === 'CREATE' ? '新建' : '编辑'}看板`"
+  >
+    <el-form :model="model" :rules="formRules">
+      <el-form-item prop="title">
+        <el-input placeholder="请输入看板标题(必填)"></el-input>
+      </el-form-item>
+      <el-form-item prop="description">
+        <el-input type="textarea" placeholder="输入看板描述(可选)"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer">
+      <el-button type="primary" size="medium" @click="handleSubmit">新建</el-button>
+      <el-button size="medium" @click="handleClose">取消</el-button>
+    </div>
   </el-dialog>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import api from '@/api';
 
 @Component({})
-export default class BoardModal extends Vue {}
+export default class BoardModal extends Vue {
+  visible = false;
+  status = 'CREATE'; // 'CREATE' or 'UPDATE'
+  model = {
+    title: '',
+    description: ''
+  };
+
+  formRules = {
+    title: [
+      { required: true, message: '请输入看板标题', trigger: 'blur' }
+    ]
+  };
+
+  show () {
+    this.visible = true;
+    console.log(api);
+  }
+
+  hide () {
+    this.visible = false;
+  }
+
+  handleClose () {
+    this.hide();
+    this.$emit('on-close');
+  }
+
+  handleSubmit () {
+    this.$emit('on-submit');
+  }
+}
 </script>
