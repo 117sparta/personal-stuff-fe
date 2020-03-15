@@ -18,7 +18,7 @@ export default class App extends Vue {}
 
 <style lang="less">
 html, body {
-  height: 98%;
+  height: 100%;
   overflow: hidden;
   padding: 0;
   margin: 0;

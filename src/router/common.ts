@@ -7,7 +7,19 @@ export default [
   {
     path: '/home',
     name: 'home',
-    component: () => import('@/views/home')
+    component: () => import('@/views/home'),
+    children: [
+      {
+        path: '/home/board',
+        name: 'home-board',
+        component: () => import('@/views/home/home-board')
+      },
+      {
+        path: '/home/message-box',
+        name: 'message-box',
+        component: () => import('@/views/home/message-box')
+      }
+    ]
   },
   {
     path: '/404',

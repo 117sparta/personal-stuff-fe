@@ -3,7 +3,8 @@
     <div class="header-container-cover">
       <div class="left">
         <el-button type="default" size="small">
-          <span class="el-icon-house"></span><span style="font-size: 0.6em;">主页</span></el-button>
+          <span class="el-icon-house" style="font-size: 1.1em;"></span>
+        </el-button>
         <el-button class="el-icon-menu" type="default" size="small">
           <span style="font-size: 0.6em;">看板</span>
         </el-button>
