@@ -1,6 +1,6 @@
-import axios from 'axios';
+import httpRequester from 'axios';
 
-const instance = axios.create({
+const instance = httpRequester.create({
   timeout: 5000,
   withCredentials: true,
   baseURL: 'http://localhost:3000'

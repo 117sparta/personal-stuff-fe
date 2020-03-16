@@ -6,7 +6,7 @@
         <board-item :item="i"></board-item>
       </el-col>
       <el-col :span="4">
-        <board-item mode="NEW" @click.native="handleShowBoardModal"></board-item>
+        <board-item mode="NEW" @click.native="handleShowBoardModal(null, 'CREATE')"></board-item>
       </el-col>
     </el-row>
     <board-modal
@@ -33,11 +33,11 @@ export default class HomeBoard extends Vue {
   showBoardModal = false;
   // TODO 获取所有看板的接口
 
-  handleShowBoardModal () {
+  handleShowBoardModal (board, status) {
     this.showBoardModal = true;
     this.$nextTick(() => {
       const modal = this.$refs.modal;
-      modal.show();
+      modal.show(board, status);
     });
   }
 

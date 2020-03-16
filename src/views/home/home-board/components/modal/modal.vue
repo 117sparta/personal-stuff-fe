@@ -5,12 +5,12 @@
     @close="handleClose"
     :title="`${status === 'CREATE' ? '新建' : '编辑'}看板`"
   >
-    <el-form :model="model" :rules="formRules">
+    <el-form :model="model" :rules="formRules" ref="board-form">
       <el-form-item prop="title">
-        <el-input placeholder="请输入看板标题(必填)"></el-input>
+        <el-input placeholder="请输入看板标题(必填)" v-model="model.title"></el-input>
       </el-form-item>
       <el-form-item prop="description">
-        <el-input type="textarea" placeholder="输入看板描述(可选)"></el-input>
+        <el-input type="textarea" placeholder="输入看板描述(可选)" v-model="model.description"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer">
@@ -39,9 +39,12 @@ export default class BoardModal extends Vue {
     ]
   };
 
-  show () {
+  show (board, status) {
+    this.status = status;
+    if (status !== 'CREATE') {
+      this.model = board;
+    }
     this.visible = true;
-    console.log(api);
   }
 
   hide () {
@@ -54,7 +57,17 @@ export default class BoardModal extends Vue {
   }
 
   handleSubmit () {
-    this.$emit('on-submit');
+    const form: any = this.$refs['board-item'];
+    form.validate((isValid) => {
+      if (isValid) {
+        api.board.createBoard(this.model).then(() => {
+          this.$emit('on-submit');
+          console.log('success');
+        }).catch(err => {
+          console.log(err);
+        });
+      }
+    });
   }
 }
 </script>
