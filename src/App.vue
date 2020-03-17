@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import MainPage from '@/views/main-page';
 
 @Component({
@@ -13,7 +13,16 @@ import MainPage from '@/views/main-page';
     MainPage
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  @Watch('$route', {
+    immediate: true
+  })
+  onRouteChanged () {
+    if (this.$route.meta.title) {
+      document.title = this.$route.meta.title;
+    }
+  }
+}
 </script>
 
 <style lang="less">
