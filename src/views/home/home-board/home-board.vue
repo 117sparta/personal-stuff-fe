@@ -24,12 +24,7 @@ import BoardItem from './components/board-item';
 import BoardModal from './components/modal';
 import api from '@/api';
 import { Notification } from 'element-ui';
-import { AxiosResponse } from 'axios';
-import { Board } from '@/declare/board';
-
-interface Response extends AxiosResponse {
-  boardList: Board[];
-}
+import { BoardResponse } from '@/declare/board';
 
 @Component({
   components: {
@@ -40,11 +35,11 @@ interface Response extends AxiosResponse {
 export default class HomeBoard extends Vue {
   boardList = [];
   showBoardModal = false;
-  // TODO 获取所有看板的接口
 
   handleGetBoardList (title?: string) {
-    api.board.queryBoardList(title).then(({ boardList }: Response) => {
+    api.board.queryBoardList(title).then(({ boardList }: BoardResponse) => {
       this.boardList = boardList;
+      this.$store.dispatch('board/setBoardList', boardList);
     }).catch(err => {
       Notification.error({
         title: '错误',

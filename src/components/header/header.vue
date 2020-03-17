@@ -5,9 +5,14 @@
         <el-button type="default" size="small">
           <span class="el-icon-house" style="font-size: 1.1em;"></span>
         </el-button>
-        <el-button class="el-icon-menu" type="default" size="small">
-          <span style="font-size: 0.6em;">看板</span>
-        </el-button>
+        <el-dropdown trigger="click" style="margin-left: 10px;">
+          <el-button class="el-icon-menu el-dropdown-link" type="default" size="small">
+            <span style="font-size: 0.6em;">看板</span>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="item in boardList" icon="el-icon-date" :key="item.id">{{item.title}}</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <el-input suffix-icon="el-icon-search" style="width: 40%; margin-left: 10px; color: blue;" size="small" v-model="hehe"></el-input>
       </div>
       <div class="right">
@@ -22,10 +27,22 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import api from '@/api';
+import { BoardResponse } from '@/declare/board';
 
 @Component({})
 export default class Header extends Vue {
   hehe = '';
+
+  get boardList () {
+    return this.$store.getters['board/boardList'];
+  }
+
+  mounted () {
+    api.board.queryBoardList().then(({ boardList }: BoardResponse) => {
+      this.$store.dispatch('board/setBoardList', boardList);
+    });
+  }
 }
 </script>
 
