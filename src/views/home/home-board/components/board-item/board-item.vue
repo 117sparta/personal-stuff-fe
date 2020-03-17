@@ -54,6 +54,11 @@ export default class BoardItem extends Vue {
     text-align: center;
   }
 }
+.board-item-new {
+  .more-list {
+    display: none;
+  }
+}
 .board-item:hover {
   background-color: rgba(238, 238, 238, 0.6);
 }
