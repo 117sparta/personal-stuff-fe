@@ -12,6 +12,16 @@ function createBoard (board) {
   );
 }
 
+function queryBoardList (boardTitle?: string) {
+  return requestObj.post(
+    '/board/queryBoardList',
+    {
+      title: boardTitle
+    }
+  );
+}
+
 export default {
-  createBoard
+  createBoard,
+  queryBoardList
 };

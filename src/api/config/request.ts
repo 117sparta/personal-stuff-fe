@@ -18,7 +18,18 @@ instance.interceptors.request.use(config => {
 });
 
 instance.interceptors.response.use(response => {
-  return Promise.resolve(response.data);
+  const data = response.data.data;
+  let isJson = true;
+  try {
+    JSON.parse(data);
+  } catch (e) {
+    isJson = false;
+  }
+  if (isJson) {
+    return Promise.resolve(JSON.parse(data));
+  } else {
+    return Promise.resolve(data);
+  }
 }, error => {
   return Promise.reject(error);
 });

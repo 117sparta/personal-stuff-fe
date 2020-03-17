@@ -1,7 +1,16 @@
 <template>
   <div :class="mode === 'NEW' ? 'board-item-new' : 'board-item'">
+    <el-dropdown class="more-list">
+      <span class="el-dropdown-link">
+        <i class="el-icon-more el-icon--right"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item icon="el-icon-edit" style="color: #ff6600">编辑</el-dropdown-item>
+        <el-dropdown-item icon="el-icon-delete" class="dropdown-align" style="color: red;">删除</el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
     <template v-if="mode === 'NORMAL'">
-     <header>看板标题</header>
+     <header>{{item.title}}</header>
     </template>
     <div v-else class="text">创建新的看板</div>
   </div>
@@ -16,6 +25,11 @@ export default class BoardItem extends Vue {
     type: String,
     default: 'NORMAL'
   }) mode; // 'NEW' | 'NORMAL'
+
+  @Prop({
+    type: Object,
+    default: () => ({})
+  }) item;
 }
 </script>
 
@@ -28,10 +42,25 @@ export default class BoardItem extends Vue {
   cursor: pointer;
 }
 .board-item {
+  position: relative;
   background-color: #eee;
+  .more-list {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  .dropdown-align {
+    text-align: center;
+  }
 }
 .board-item:hover {
   background-color: rgba(238, 238, 238, 0.6);
+}
+.board-item:hover {
+  .more-list {
+    display: block;
+  }
 }
 .board-item-new {
   position: relative;

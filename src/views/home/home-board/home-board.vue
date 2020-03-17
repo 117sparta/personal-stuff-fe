@@ -2,8 +2,8 @@
   <div class="board-list">
     <header class="board-list-header">你的看板</header>
     <el-row :gutter="20">
-      <el-col :span="4" v-for="i in 7" :key="i">
-        <board-item :item="i"></board-item>
+      <el-col :span="4" v-for="item in boardList" :key="item.id">
+        <board-item :item="item"></board-item>
       </el-col>
       <el-col :span="4">
         <board-item mode="NEW" @click.native="handleShowBoardModal(null, 'CREATE')"></board-item>
@@ -13,14 +13,23 @@
       v-if="showBoardModal"
       ref="modal"
       @on-close="handleModalClose"
+      @on-submit="handleModalSubmit"
     ></board-modal>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import BoardItem from './components/board-item';
 import BoardModal from './components/modal';
+import api from '@/api';
+import { Notification } from 'element-ui';
+import { AxiosResponse } from 'axios';
+import { Board } from '@/declare/board';
+
+interface Response extends AxiosResponse {
+  boardList: Board[];
+}
 
 @Component({
   components: {
@@ -33,16 +42,36 @@ export default class HomeBoard extends Vue {
   showBoardModal = false;
   // TODO 获取所有看板的接口
 
+  handleGetBoardList (title?: string) {
+    api.board.queryBoardList(title).then(({ boardList }: Response) => {
+      this.boardList = boardList;
+    }).catch(err => {
+      Notification.error({
+        title: '错误',
+        message: err.message
+      });
+    });
+  }
+
   handleShowBoardModal (board, status) {
     this.showBoardModal = true;
     this.$nextTick(() => {
-      const modal = this.$refs.modal;
+      const modal: any = this.$refs.modal;
       modal.show(board, status);
     });
   }
 
   handleModalClose () {
     this.showBoardModal = false;
+  }
+
+  handleModalSubmit () {
+    this.showBoardModal = false;
+    this.handleGetBoardList();
+  }
+
+  mounted () {
+    this.handleGetBoardList();
   }
 }
 </script>
