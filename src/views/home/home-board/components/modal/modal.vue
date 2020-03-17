@@ -23,6 +23,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import api from '@/api';
+import { Notification } from 'element-ui';
 
 @Component({})
 export default class BoardModal extends Vue {
@@ -57,14 +58,22 @@ export default class BoardModal extends Vue {
   }
 
   handleSubmit () {
-    const form: any = this.$refs['board-item'];
+    const form: any = this.$refs['board-form'];
     form.validate((isValid) => {
       if (isValid) {
         api.board.createBoard(this.model).then(() => {
+          Notification({
+            type: 'success',
+            title: '新建成功',
+            message: ''
+          });
           this.$emit('on-submit');
-          console.log('success');
         }).catch(err => {
-          console.log(err);
+          Notification({
+            type: 'error',
+            title: '新建失败',
+            message: err.message
+          });
         });
       }
     });
