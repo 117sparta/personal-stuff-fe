@@ -21,7 +21,17 @@ function queryBoardList (boardTitle?: string) {
   );
 }
 
+function deleteBoard (boardId: number) {
+  return requestObj.post(
+    './board/deleteBoard',
+    {
+      id: boardId
+    }
+  );
+}
+
 export default {
   createBoard,
-  queryBoardList
+  queryBoardList,
+  deleteBoard
 };

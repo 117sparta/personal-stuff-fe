@@ -3,7 +3,7 @@
     <header class="board-list-header">你的看板</header>
     <el-row :gutter="20">
       <el-col :span="4" v-for="item in boardList" :key="item.id">
-        <board-item :item="item"></board-item>
+        <board-item :item="item" @on-delete="handleBoardItemDeleted"></board-item>
       </el-col>
       <el-col :span="4">
         <board-item mode="NEW" @click.native="handleShowBoardModal(null, 'CREATE')"></board-item>
@@ -63,6 +63,10 @@ export default class HomeBoard extends Vue {
   handleModalSubmit () {
     this.showBoardModal = false;
     this.handleGetBoardList();
+  }
+
+  handleBoardItemDeleted () {
+    this.handleGetBoardList(); // 刷新后重新加载看板列表
   }
 
   mounted () {

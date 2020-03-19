@@ -6,7 +6,7 @@
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item icon="el-icon-edit" style="color: #ff6600">编辑</el-dropdown-item>
-        <el-dropdown-item icon="el-icon-delete" class="dropdown-align" style="color: red;">删除</el-dropdown-item>
+        <el-dropdown-item icon="el-icon-delete" class="dropdown-align" style="color: red;" @click.native="handleDeleteBoard">删除</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
     <template v-if="mode === 'NORMAL'">
@@ -18,6 +18,8 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
+import api from '@/api';
+import { Notification } from 'element-ui';
 
 @Component({})
 export default class BoardItem extends Vue {
@@ -30,6 +32,17 @@ export default class BoardItem extends Vue {
     type: Object,
     default: () => ({})
   }) item;
+
+  handleDeleteBoard () {
+    this.item.id && api.board.deleteBoard(this.item.id).then(() => {
+      this.$emit('on-delete');
+    }).catch(err => {
+      Notification.error({
+        title: '错误',
+        message: err.message
+      });
+    });
+  }
 }
 </script>
 
