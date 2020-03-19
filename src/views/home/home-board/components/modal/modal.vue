@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
     <div slot="footer">
-      <el-button type="primary" size="medium" @click="handleSubmit">新建</el-button>
+      <el-button type="primary" size="medium" @click="handleSubmit">{{status === 'UPDATE' ? '确定' : '新建'}}</el-button>
       <el-button size="medium" @click="handleClose">取消</el-button>
     </div>
   </el-dialog>
@@ -61,7 +61,7 @@ export default class BoardModal extends Vue {
     const form: any = this.$refs['board-form'];
     form.validate((isValid) => {
       if (isValid) {
-        api.board.createBoard(this.model).then(() => {
+        this.status === 'CREATE' && api.board.createBoard(this.model).then(() => {
           Notification({
             type: 'success',
             title: '新建成功',
@@ -72,6 +72,20 @@ export default class BoardModal extends Vue {
           Notification({
             type: 'error',
             title: '新建失败',
+            message: err.message
+          });
+        });
+        this.status === 'UPDATE' && api.board.updateBoard(this.model).then(() => {
+          Notification({
+            type: 'success',
+            title: '更新成功',
+            message: ''
+          });
+          this.$emit('on-submit');
+        }).catch(err => {
+          Notification({
+            type: 'error',
+            title: '更新失败',
             message: err.message
           });
         });

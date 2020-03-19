@@ -5,7 +5,7 @@
         <i class="el-icon-more el-icon--right"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item icon="el-icon-edit" style="color: #ff6600">编辑</el-dropdown-item>
+        <el-dropdown-item icon="el-icon-edit" style="color: #ff6600" @click.native="handleEditBoard">编辑</el-dropdown-item>
         <el-dropdown-item icon="el-icon-delete" class="dropdown-align" style="color: red;" @click.native="handleDeleteBoard">删除</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -42,6 +42,10 @@ export default class BoardItem extends Vue {
         message: err.message
       });
     });
+  }
+
+  handleEditBoard () {
+    this.$emit('on-update');
   }
 }
 </script>

@@ -3,7 +3,7 @@
     <header class="board-list-header">你的看板</header>
     <el-row :gutter="20">
       <el-col :span="4" v-for="item in boardList" :key="item.id">
-        <board-item :item="item" @on-delete="handleBoardItemDeleted"></board-item>
+        <board-item :item="item" @on-delete="handleBoardItemDeleted" @on-update="handleShowBoardModal(item, 'UPDATE')"></board-item>
       </el-col>
       <el-col :span="4">
         <board-item mode="NEW" @click.native="handleShowBoardModal(null, 'CREATE')"></board-item>

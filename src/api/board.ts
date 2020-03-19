@@ -1,5 +1,6 @@
 import requestObj from '@/api/config/request';
 import generateTimeStamp from './lib/timestamp';
+import lib from '@/lib';
 
 function createBoard (board) {
   return requestObj.post(
@@ -23,9 +24,20 @@ function queryBoardList (boardTitle?: string) {
 
 function deleteBoard (boardId: number) {
   return requestObj.post(
-    './board/deleteBoard',
+    '/board/deleteBoard',
     {
       id: boardId
+    }
+  );
+}
+
+function updateBoard (board) {
+  return requestObj.post(
+    '/board/updateBoard',
+    {
+      ...board,
+      createdAt: lib.dateToString(board.createdAt),
+      updatedAt: generateTimeStamp()
     }
   );
 }
@@ -33,5 +45,6 @@ function deleteBoard (boardId: number) {
 export default {
   createBoard,
   queryBoardList,
-  deleteBoard
+  deleteBoard,
+  updateBoard
 };
