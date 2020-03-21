@@ -31,6 +31,14 @@ export default [
     ]
   },
   {
+    path: '/board/:boardId',
+    name: 'board',
+    component: () => import('@/views/board'),
+    meta: {
+      title: '看板页面'
+    }
+  },
+  {
     path: '/404',
     name: 'Not-found',
     component: () => import('@/views/error-page/404'),

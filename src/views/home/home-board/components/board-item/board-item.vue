@@ -4,9 +4,9 @@
       <span class="el-dropdown-link">
         <i class="el-icon-more el-icon--right"></i>
       </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item icon="el-icon-edit" style="color: #ff6600" @click.native="handleEditBoard">编辑</el-dropdown-item>
-        <el-dropdown-item icon="el-icon-delete" class="dropdown-align" style="color: red;" @click.native="handleDeleteBoard">删除</el-dropdown-item>
+      <el-dropdown-menu slot="dropdown" :show-timeout="0">
+        <el-dropdown-item icon="el-icon-edit" style="color: #ff6600" @click.native.capture="handleEditBoard">编辑</el-dropdown-item>
+        <el-dropdown-item icon="el-icon-delete" class="dropdown-align" style="color: red;" @click.native.capture="handleDeleteBoard">删除</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
     <template v-if="mode === 'NORMAL'">
