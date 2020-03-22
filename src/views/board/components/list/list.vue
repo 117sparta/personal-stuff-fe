@@ -1,14 +1,18 @@
 <template>
   <div class="list-container">
-    <div class="list-title">标题 <span class="el-icon-edit list-title-icon"></span></div>
+    <div class="list-title">{{list.title}}<span class="el-icon-edit list-title-icon"></span></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component({})
 export default class BoardList extends Vue {
+  @Prop({
+    type: Object,
+    default: () => ({})
+  }) list;
 }
 </script>
 

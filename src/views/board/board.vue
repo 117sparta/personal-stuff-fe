@@ -25,7 +25,8 @@ import { Vue, Component, Watch } from 'vue-property-decorator';
 import BoardHeader from './components/board-header';
 import BoardList from './components/list';
 import api from '@/api';
-import { BoardResponse } from '@/declare/board';
+import { Board, BoardResponse } from '@/declare/board';
+import { List, ListResponse } from '@/declare/list';
 
 @Component({
   components: {
@@ -37,7 +38,14 @@ export default class PSBoard extends Vue {
   showAddPanel = false;
   listTitle = '';
   boardId = '';
-  board = {};
+  board: Board = {
+    createdAt: '',
+    updatedAt: '',
+    title: '',
+    boardId: ''
+  };
+
+  lists: List[] = [];
 
   @Watch('$route', {
     immediate: true
@@ -57,12 +65,21 @@ export default class PSBoard extends Vue {
   }
 
   handleCreateNewList () {
-    console.log('hehe');
+    api.list.createList(this.listTitle, this.board.id, 'CREATE').then(res => {
+      console.log(res);
+    });
+  }
+
+  handleGetBoardList () {
+    api.list.queryList(this.board.id).then((res: ListResponse) => {
+      this.lists = res.lists;
+    });
   }
 
   handleGetBoardInfo () {
     api.board.searchBoard(this.boardId).then((res: BoardResponse) => {
       this.board = res.boardList[0];
+      this.handleGetBoardList();
     });
   }
 }
