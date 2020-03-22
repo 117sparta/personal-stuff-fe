@@ -5,6 +5,7 @@ export interface Board {
   title: string;
   updatedAt: number | string;
   createdAt: number | string;
+  boardId: string;
 }
 
 export interface BoardResponse extends AxiosResponse {

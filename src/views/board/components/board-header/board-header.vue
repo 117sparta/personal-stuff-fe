@@ -1,14 +1,18 @@
 <template>
   <div class="board-header-container">
-    <div class="board-title">标题<span class="el-icon-edit title-edit"></span></div>
+    <div class="board-title">{{item.title}}<span class="el-icon-edit title-edit"></span></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component({})
 export default class BoardHeader extends Vue {
+  @Prop({
+    type: Object,
+    default: () => ({})
+  }) item;
 }
 </script>
 

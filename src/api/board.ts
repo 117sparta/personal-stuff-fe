@@ -42,9 +42,19 @@ function updateBoard (board) {
   );
 }
 
+function searchBoard (boardId: string) {
+  return requestObj.post(
+    '/board/searchBoard',
+    {
+      boardId
+    }
+  );
+}
+
 export default {
   createBoard,
   queryBoardList,
   deleteBoard,
-  updateBoard
+  updateBoard,
+  searchBoard
 };
