@@ -29,7 +29,6 @@ import BoardItem from './components/board-item';
 import BoardModal from './components/modal';
 import api from '@/api';
 import { Notification } from 'element-ui';
-import { BoardResponse } from '@/declare/board';
 
 @Component({
   components: {

@@ -13,7 +13,9 @@
     "baseUrl": ".",
     "allowJs": true,
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "src/typings/board",
+      "src/typings/list"
     ],
     "paths": {
       "@/*": [

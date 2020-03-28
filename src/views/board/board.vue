@@ -3,14 +3,14 @@
     <board-header :item="board"></board-header>
     <main style="height: 91%;overflow: auto;">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
-        <BoardList></BoardList>
+        <BoardList v-for="item in lists" :key="item.id" :list="item"></BoardList>
       </div>
       <div class="new-list-button" @click="handleShowAddPanel" v-show="!showAddPanel">
         <span class="el-icon-plus"></span>
         <span>新建列表</span>
       </div>
       <div class="new-list-panel" v-show="showAddPanel">
-        <el-input v-model="listTitle" style="width: 300px;" placeholder="请输入列表标题"></el-input>
+        <el-input v-model="listTitle" style="width: 300px;" maxlength="14" placeholder="请输入列表标题"></el-input>
         <div class="button-group">
           <el-button size="small" type="success" @click="handleCreateNewList">确定</el-button>
           <el-button size="small" @click="handleCancelAddList">取消</el-button>
@@ -25,8 +25,8 @@ import { Vue, Component, Watch } from 'vue-property-decorator';
 import BoardHeader from './components/board-header';
 import BoardList from './components/list';
 import api from '@/api';
-import { Board, BoardResponse } from '@/declare/board';
-import { List, ListResponse } from '@/declare/list';
+// import { Board, BoardResponse } from '@/declare/board';
+// import { List, ListResponse } from '@/declare/list';
 
 @Component({
   components: {
@@ -66,7 +66,9 @@ export default class PSBoard extends Vue {
 
   handleCreateNewList () {
     api.list.createList(this.listTitle, this.board.id, 'CREATE').then(res => {
-      console.log(res);
+      this.showAddPanel = false;
+      this.listTitle = '';
+      this.handleGetBoardList();
     });
   }
 

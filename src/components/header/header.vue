@@ -28,7 +28,6 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import api from '@/api';
-import { BoardResponse } from '@/declare/board';
 
 @Component({})
 export default class Header extends Vue {
