@@ -1,7 +1,7 @@
 <template>
   <div class="list-container">
     <div v-if="showEditInput">
-      <el-input style="white-space: pre-wrap;" maxlength="14" placeholder="请输入列表标题" v-model="editingTitle" @keydown.native.enter="handleUpdateList"></el-input>
+      <el-input style="white-space: pre-wrap;" ref="title-input" maxlength="14" placeholder="请输入列表标题" v-model="editingTitle" @keydown.native.enter="handleUpdateList"></el-input>
     </div>
     <div v-else class="list-title">{{list.title}}<span class="el-icon-edit list-title-icon" @click="handleEditTitle"></span></div>
   </div>
@@ -25,11 +25,21 @@ export default class BoardList extends Vue {
   handleEditTitle () {
     this.editingTitle = this.list.title;
     this.showEditInput = true;
+    this.$nextTick(() => {
+      const inputEle: any = this.$refs['title-input'];
+      inputEle.focus();
+    });
+  }
+
+  handleEditCancel () {
+    this.showEditInput = false;
+    this.editingTitle = '';
   }
 
   handleUpdateList () {
     if (this.editingTitle && this.editingTitle !== this.list.title) {
-      api.list.createList(this.list.title, this.list.boardId, 'UPDATE').then(() => {
+      api.list.createList(this.editingTitle, this.list.boardId, 'UPDATE', this.list.id).then(() => {
+        this.$parent.$emit('refreshList');
         this.showEditInput = false;
         this.editingTitle = '';
       }).catch((err) => {
@@ -52,6 +62,7 @@ export default class BoardList extends Vue {
 
 <style lang="less" scoped>
 .list-container {
+  display: inline-block;
   width: 300px;
   background-color: white;
   max-height: 100%;

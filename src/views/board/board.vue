@@ -1,9 +1,11 @@
 <template>
   <div style="height: 100%; background-color: #d6f5f5;">
-    <board-header :item="board"></board-header>
+    <board-header :item="board" @refreshBoard="handleGetBoardInfo"></board-header>
     <main style="height: 91%;overflow: auto;">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
-        <BoardList v-for="item in lists" :key="item.id" :list="item"></BoardList>
+        <draggable tag="div" v-model="lists" @change="handleListChange" @refreshList="handleGetBoardList">
+          <BoardList v-for="item in lists" :key="item.id" :list="item"></BoardList>
+        </draggable>
       </div>
       <div class="new-list-button" @click="handleShowAddPanel" v-show="!showAddPanel">
         <span class="el-icon-plus"></span>
@@ -25,13 +27,16 @@ import { Vue, Component, Watch } from 'vue-property-decorator';
 import BoardHeader from './components/board-header';
 import BoardList from './components/list';
 import api from '@/api';
+import draggable from 'vuedraggable';
+import lib from '@/lib';
 // import { Board, BoardResponse } from '@/declare/board';
 // import { List, ListResponse } from '@/declare/list';
 
 @Component({
   components: {
     BoardHeader,
-    BoardList
+    BoardList,
+    draggable
   }
 })
 export default class PSBoard extends Vue {
@@ -53,6 +58,10 @@ export default class PSBoard extends Vue {
   onRouteChanged () {
     this.boardId = this.$route.params.boardId;
     this.handleGetBoardInfo();
+  }
+
+  get handleListChange () {
+    return lib.debounceDelay(this.handleListOrderChanged, 2000);
   }
 
   handleShowAddPanel () {
@@ -83,6 +92,10 @@ export default class PSBoard extends Vue {
       this.board = res.boardList[0];
       this.handleGetBoardList();
     });
+  }
+
+  handleListOrderChanged () {
+    console.log('changed');
   }
 }
 </script>

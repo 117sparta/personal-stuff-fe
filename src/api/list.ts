@@ -2,7 +2,7 @@ import requestObj from './config/request';
 import generateTimestamp from './lib/timestamp';
 
 // 创建或者更新列表，listTitle是列表标题，status表示是创建还是更新，值有两个： CREATE， UPDATE
-function createList (listTitle: string, boardId: number, status: string) {
+function createList (listTitle: string, boardId: number, status: string, listId?: number) {
   const url = status === 'CREATE' ? '/list/createList' : '/list/updateList';
   return requestObj.post(
     url,
@@ -10,7 +10,8 @@ function createList (listTitle: string, boardId: number, status: string) {
       title: listTitle,
       boardId,
       createdAt: generateTimestamp(),
-      updatedAt: generateTimestamp()
+      updatedAt: generateTimestamp(),
+      listId
     }
   );
 }

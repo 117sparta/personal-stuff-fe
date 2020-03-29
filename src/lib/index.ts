@@ -13,7 +13,20 @@ function dateStrToTimestamp (dateStr: string) {
   return Date.parse(dateStr);
 }
 
+function debounceDelay (func, wait) {
+  let timer = null;
+  const context = this;
+  const args = Array.from(arguments).slice(2);
+  return function (...res) {
+    timer = setTimeout(() => {
+      timer = null;
+      func.apply(context, ...args.concat(res));
+    }, wait);
+  };
+}
+
 export default {
   dateToString,
-  dateStrToTimestamp
+  dateStrToTimestamp,
+  debounceDelay
 };
