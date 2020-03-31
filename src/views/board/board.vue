@@ -3,7 +3,7 @@
     <board-header :item="board" @refreshBoard="handleGetBoardInfo"></board-header>
     <main style="height: 91%;overflow: auto;">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
-        <draggable tag="div" v-model="lists" @change="handleListChange" @refreshList="handleGetBoardList">
+        <draggable tag="div" style="height: 100%;" v-model="lists" @change="handleListChange" @refreshList="handleGetBoardList" @start="handleListDragStart" @end="handleListDragEnd">
           <BoardList v-for="item in lists" :key="item.id" :list="item"></BoardList>
         </draggable>
       </div>
@@ -96,6 +96,14 @@ export default class PSBoard extends Vue {
 
   handleListOrderChanged () {
     console.log('changed');
+  }
+
+  handleListDragStart () {
+
+  }
+
+  handleListDragEnd () {
+
   }
 }
 </script>
