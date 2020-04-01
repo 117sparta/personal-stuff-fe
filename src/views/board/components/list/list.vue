@@ -5,13 +5,18 @@
     </div>
     <div v-else class="list-title">{{list.title}}<span class="el-icon-edit list-title-icon" @click="handleEditTitle"></span></div>
     <section class="card-list-container">
-      <draggable v-model="cardList">
+      <draggable tag="div" style="max-height: 100%; overflow: auto;" v-model="cardList" @emptyString="handleCardTitleEditCancel" ref="card-list" @on-submit="handleCardCreated">
+        <stuff-card v-for="item in cardList" :card="item" :key="item.id"></stuff-card>
       </draggable>
     </section>
     <section class="add-card-footer">
-      <el-input ref="textarea" v-if="showCardTitleInput" v-model="editingCardTitle" type="textarea" :rows="1" maxlength="46" @keydown.native.enter="handleCreateNewCard" @blur="cancelCreateNewCard"></el-input>
-      <article v-else class="add-card-footer-btn" @click="handleAddNewCard">
-        <span class="el-icon-plus" style="margin-right: 10px;"></span>添加一个卡片
+      <article class="add-card-footer-btn">
+        <div v-if="showCardTitleInput" style="text-align: left;">
+          <el-button type="default" size="medium" @click="handleCardTitleEditCancel">取消</el-button>
+        </div>
+        <div v-else @click="handleAddNewCard">
+          <span class="el-icon-plus" style="margin-right: 10px;"></span>添加一个卡片
+        </div>
       </article>
     </section>
   </div>
@@ -22,10 +27,12 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
 import api from '@/api';
 import { Notification } from 'element-ui';
 import draggable from 'vuedraggable';
+import StuffCard from '../stuff-card';
 
 @Component({
   components: {
-    draggable
+    draggable,
+    StuffCard
   }
 })
 export default class BoardList extends Vue {
@@ -38,7 +45,6 @@ export default class BoardList extends Vue {
   editingTitle: string = '';
   cardList: any[] = [];
   showCardTitleInput: boolean = false;
-  editingCardTitle: string = '';
 
   handleEditTitle () {
     this.editingTitle = this.list.title;
@@ -78,23 +84,25 @@ export default class BoardList extends Vue {
 
   handleAddNewCard () {
     this.showCardTitleInput = true;
-    this.$nextTick(() => {
-      const textarea: any = this.$refs.textarea;
-      textarea.focus();
+    this.cardList.push({
+      id: 0,
+      title: '',
+      status: 'CREATE',
+      description: '',
+      deadline: null
     });
+    const cardList: any = this.$refs['card-list'];
+    cardList.scrollTop = 10000;
   }
 
-  handleCreateNewCard () {
-    if (!this.editingCardTitle) {
-      this.showCardTitleInput = false;
-      return;
-    }
+  handleCardTitleEditCancel () {
     this.showCardTitleInput = false;
-    this.editingCardTitle = '';
+    this.cardList.pop();
   }
 
-  cancelCreateNewCard () {
+  handleCardCreated () {
     this.showCardTitleInput = false;
+    this.cardList.pop(); // 这个是要删除的代码
   }
 }
 </script>
@@ -103,12 +111,13 @@ export default class BoardList extends Vue {
 .list-container {
   display: inline-block;
   width: 300px;
-  background-color: white;
+  background-color: #eee;
   max-height: 100%;
   margin-left: 10px;
   padding: 2px;
   overflow: auto;
   border-radius: 5px;
+  vertical-align: top;
   box-shadow: 0 0 4px #ddd;
   .list-title {
     padding: 10px 8px;
@@ -130,12 +139,12 @@ export default class BoardList extends Vue {
       color: #aaa;
       padding: 4px;
       border-radius: 2px;
-      background-color: #eee;
+      background-color: white;
       text-align: center;
       cursor: pointer;
     }
     &-btn:hover {
-      background-color: #ddd;
+      background-color: rgba(254, 254, 254, 0.7);
     }
   }
   .card-list-container {
