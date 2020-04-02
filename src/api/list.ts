@@ -20,9 +20,7 @@ function updateListOrder (lists) {
   const url = '/list/updateList';
   return requestObj.post(
     url,
-    {
-      lists
-    }
+    JSON.stringify(lists)
   );
 }
 

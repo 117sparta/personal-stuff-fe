@@ -127,10 +127,9 @@ export default class BoardList extends Vue {
   }
 
   handleCardListChanged (e) {
-    console.log(e);
     if (e.removed) return;
     this.cardList.forEach((item: any, index: number) => {
-      item.cardOrder = index;
+      item.cardOrder = index + 1;
     });
     api.card.updateCard(this.cardList).catch(err => {
       console.log(err);

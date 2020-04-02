@@ -18,9 +18,10 @@ function debounceDelay (func, wait) {
   const context = this;
   const args = Array.from(arguments).slice(2);
   return function (...res) {
+    if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
       timer = null;
-      func.apply(context, ...args.concat(res));
+      func.apply(context, args.concat(res));
     }, wait);
   };
 }

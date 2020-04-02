@@ -89,6 +89,9 @@ export default class PSBoard extends Vue {
 
   handleGetBoardList () {
     api.list.queryAllList(this.board.id).then((res: ListResponse) => {
+      res.lists.sort((a: any, b: any) => {
+        return a.listOrder - b.listOrder;
+      });
       this.lists = res.lists;
     });
   }
@@ -112,8 +115,13 @@ export default class PSBoard extends Vue {
     });
   }
 
-  handleListOrderChanged () {
-    console.log('changed');
+  handleListOrderChanged (e) {
+    this.lists.forEach((item: any, index: number) => {
+      item.listOrder = index + 1;
+    });
+    api.list.updateListOrder(this.lists).catch(err => {
+      console.log(err);
+    });
   }
 }
 </script>
