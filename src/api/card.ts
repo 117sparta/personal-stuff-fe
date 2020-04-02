@@ -12,6 +12,22 @@ function createCard (message) {
   );
 }
 
+function updateCard (cardList, listId?) {
+  return requestObj.post(
+    '/card/updateCard',
+    JSON.stringify({
+      cardList: cardList.map((item: any) => {
+        return {
+          ...item,
+          updatedAt: generateTimeStamp()
+        };
+      }),
+      listId
+    })
+  );
+}
+
 export default {
-  createCard
+  createCard,
+  updateCard
 };

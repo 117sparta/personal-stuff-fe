@@ -16,6 +16,16 @@ function createList (listTitle: string, boardId: number, status: string, listId?
   );
 }
 
+function updateListOrder (lists) {
+  const url = '/list/updateList';
+  return requestObj.post(
+    url,
+    {
+      lists
+    }
+  );
+}
+
 function deleteList (listId: number) {
   return requestObj.post(
     '/list/deleteList',
@@ -48,5 +58,6 @@ export default {
   createList,
   queryAllList,
   deleteList,
-  queryList
+  queryList,
+  updateListOrder
 };

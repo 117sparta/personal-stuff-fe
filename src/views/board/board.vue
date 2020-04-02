@@ -9,8 +9,7 @@
           v-model="lists"
           @change="handleListChange"
           @refreshList="handleGetBoardList"
-          @refreshSingleList="handleGetList"
-          @start="handleListDragStart" @end="handleListDragEnd">
+          @refreshSingleList="handleGetList">
           <BoardList v-for="item in lists" :key="item.id" :list="item" :board-id="board.id"></BoardList>
         </draggable>
       </div>
@@ -115,14 +114,6 @@ export default class PSBoard extends Vue {
 
   handleListOrderChanged () {
     console.log('changed');
-  }
-
-  handleListDragStart () {
-
-  }
-
-  handleListDragEnd () {
-
   }
 }
 </script>

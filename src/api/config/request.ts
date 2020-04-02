@@ -10,7 +10,11 @@ const instance = httpRequester.create({
 instance.interceptors.request.use(config => {
   if (config.method.toLocaleLowerCase() === 'post') {
     config.headers['Content-type'] = 'application/x-www-form-urlencoded';
-    config.data = qs.stringify(config.data);
+    if (typeof config.data !== 'string') {
+      config.data = qs.stringify(config.data);
+    } else {
+      config.data = qs.stringify({ data: config.data });
+    }
   }
   return config;
 }, error => {

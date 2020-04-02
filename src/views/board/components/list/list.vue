@@ -10,10 +10,8 @@
         group="stuffcard" v-model="cardList"
         @emptyString="handleCardTitleEditCancel"
         ref="card-list"
-        @start="handleDragStart"
-        @end="handleDragEnd"
-        @update="handleDragUpdate"
-        @on-submit="handleCardCreated">
+        @change="handleCardListChanged"
+        >
         <stuff-card v-for="item in cardList" :card="item" :key="item.id" :board-id="boardId" :list-id="list.id"></stuff-card>
       </draggable>
     </section>
@@ -63,6 +61,9 @@ export default class BoardList extends Vue {
     immediate: true
   })
   onListChanged () {
+    this.list.cardList.sort((a, b) => {
+      return a.cardOrder - b.cardOrder;
+    });
     this.cardList = this.list.cardList;
   }
 
@@ -125,16 +126,20 @@ export default class BoardList extends Vue {
     this.$parent.$emit('refreshSingleList', this.list.id);
   }
 
-  handleDragStart () {
-    console.log('dragStart: ' + this.list.title);
-  }
-
-  handleDragEnd () {
-    console.log('dragEnd: ' + this.list.title);
-  }
-
-  handleDragUpdate () {
-    console.log('dragUpdated: ' + this.list.title);
+  handleCardListChanged (e) {
+    console.log(e);
+    if (e.removed) return;
+    this.cardList.forEach((item: any, index: number) => {
+      item.cardOrder = index;
+    });
+    api.card.updateCard(this.cardList).catch(err => {
+      console.log(err);
+    });
+    if (e.added) {
+      api.card.updateCard([e.added.element], this.list.id).catch(err => {
+        console.log(err);
+      });
+    }
   }
 }
 </script>
