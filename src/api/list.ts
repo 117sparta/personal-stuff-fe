@@ -25,17 +25,28 @@ function deleteList (listId: number) {
   );
 }
 
-function queryList (boardId) {
+function queryAllList (boardId) {
   return requestObj.post(
-    '/list/queryList',
+    '/list/queryAllList',
     {
       boardId
     }
   );
 }
 
+function queryList (boardId, listId) {
+  return requestObj.post(
+    '/list/queryList',
+    {
+      boardId,
+      listId
+    }
+  );
+}
+
 export default {
   createList,
-  queryList,
-  deleteList
+  queryAllList,
+  deleteList,
+  queryList
 };

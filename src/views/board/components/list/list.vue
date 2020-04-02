@@ -5,8 +5,16 @@
     </div>
     <div v-else class="list-title">{{list.title}}<span class="el-icon-edit list-title-icon" @click="handleEditTitle"></span></div>
     <section class="card-list-container">
-      <draggable tag="div" style="max-height: 100%; overflow: auto;" v-model="cardList" @emptyString="handleCardTitleEditCancel" ref="card-list" @on-submit="handleCardCreated">
-        <stuff-card v-for="item in cardList" :card="item" :key="item.id"></stuff-card>
+      <draggable tag="div"
+        style="max-height: 100%; overflow: auto;"
+        group="stuffcard" v-model="cardList"
+        @emptyString="handleCardTitleEditCancel"
+        ref="card-list"
+        @start="handleDragStart"
+        @end="handleDragEnd"
+        @update="handleDragUpdate"
+        @on-submit="handleCardCreated">
+        <stuff-card v-for="item in cardList" :card="item" :key="item.id" :board-id="boardId" :list-id="list.id"></stuff-card>
       </draggable>
     </section>
     <section class="add-card-footer">
@@ -23,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import api from '@/api';
 import { Notification } from 'element-ui';
 import draggable from 'vuedraggable';
@@ -41,10 +49,22 @@ export default class BoardList extends Vue {
     default: () => ({})
   }) list;
 
+  @Prop({
+    type: [String, Number],
+    default: ''
+  }) boardId;
+
   showEditInput: boolean = false;
   editingTitle: string = '';
   cardList: any[] = [];
   showCardTitleInput: boolean = false;
+
+  @Watch('list', {
+    immediate: true
+  })
+  onListChanged () {
+    this.cardList = this.list.cardList;
+  }
 
   handleEditTitle () {
     this.editingTitle = this.list.title;
@@ -63,7 +83,7 @@ export default class BoardList extends Vue {
   handleUpdateList () {
     if (this.editingTitle && this.editingTitle !== this.list.title) {
       api.list.createList(this.editingTitle, this.list.boardId, 'UPDATE', this.list.id).then(() => {
-        this.$parent.$emit('refreshList');
+        this.$parent.$emit('refreshSingleList', this.list.id);
         this.showEditInput = false;
         this.editingTitle = '';
       }).catch((err) => {
@@ -102,7 +122,19 @@ export default class BoardList extends Vue {
 
   handleCardCreated () {
     this.showCardTitleInput = false;
-    this.cardList.pop(); // 这个是要删除的代码
+    this.$parent.$emit('refreshSingleList', this.list.id);
+  }
+
+  handleDragStart () {
+    console.log('dragStart: ' + this.list.title);
+  }
+
+  handleDragEnd () {
+    console.log('dragEnd: ' + this.list.title);
+  }
+
+  handleDragUpdate () {
+    console.log('dragUpdated: ' + this.list.title);
   }
 }
 </script>
@@ -150,6 +182,7 @@ export default class BoardList extends Vue {
   .card-list-container {
     max-height: 91%;
     overflow: auto;
+    padding: 0 6px;
   }
 }
 </style>

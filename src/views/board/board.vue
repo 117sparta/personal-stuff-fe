@@ -1,10 +1,17 @@
 <template>
   <div style="height: 100%; background-color: #d6f5f5;">
     <board-header :item="board" @refreshBoard="handleGetBoardInfo"></board-header>
-    <main style="height: 91%;overflow: auto;">
+    <main style="height: 91%;overflow: auto; white-space: nowrap; padding-right: 20px;">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
-        <draggable tag="div" style="height: 100%;" v-model="lists" @change="handleListChange" @refreshList="handleGetBoardList" @start="handleListDragStart" @end="handleListDragEnd">
-          <BoardList v-for="item in lists" :key="item.id" :list="item"></BoardList>
+        <draggable
+          tag="div"
+          style="height: 100%;"
+          v-model="lists"
+          @change="handleListChange"
+          @refreshList="handleGetBoardList"
+          @refreshSingleList="handleGetList"
+          @start="handleListDragStart" @end="handleListDragEnd">
+          <BoardList v-for="item in lists" :key="item.id" :list="item" :board-id="board.id"></BoardList>
         </draggable>
       </div>
       <div class="new-list-button" @click="handleShowAddPanel" v-show="!showAddPanel">
@@ -82,8 +89,20 @@ export default class PSBoard extends Vue {
   }
 
   handleGetBoardList () {
-    api.list.queryList(this.board.id).then((res: ListResponse) => {
+    api.list.queryAllList(this.board.id).then((res: ListResponse) => {
       this.lists = res.lists;
+    });
+  }
+
+  handleGetList (listId) {
+    api.list.queryList(this.board.id, listId).then((res: any) => {
+      const length = this.lists.length;
+      for (let i = 0; i < length; i++) {
+        if (this.lists[i].id === listId) {
+          this.lists.splice(i, 1, res.list);
+          break;
+        }
+      }
     });
   }
 
