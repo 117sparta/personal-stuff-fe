@@ -1,5 +1,5 @@
 <template>
-  <section class="card-container">
+  <section class="card-container" @click="handleShowCardModal">
     <el-input
       ref="title-input"
       v-if="showTitleInput"
@@ -19,6 +19,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import api from '@/api';
 import { Notification } from 'element-ui';
+import eventBus from '../../eventBus.js';
 
 @Component({})
 export default class StuffCard extends Vue {
@@ -67,6 +68,10 @@ export default class StuffCard extends Vue {
     }).catch(err => {
       console.log(err);
     });
+  }
+
+  handleShowCardModal () {
+    eventBus.$emit('on-card-click', this.card);
   }
 }
 </script>

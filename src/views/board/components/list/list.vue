@@ -11,6 +11,7 @@
         @emptyString="handleCardTitleEditCancel"
         ref="card-list"
         @change="handleCardListChanged"
+        @on-submit="handleRefreshList"
         >
         <stuff-card v-for="item in cardList" :card="item" :key="item.id" :board-id="boardId" :list-id="list.id"></stuff-card>
       </draggable>
@@ -97,6 +98,10 @@ export default class BoardList extends Vue {
       this.showEditInput = false;
       this.editingTitle = '';
     }
+  }
+
+  handleRefreshList () {
+    this.$parent.$emit('refreshSingleList', this.list.id); // 刷新列表
   }
 
   showMsg (type: string, message: any = { duration: 0 }) {

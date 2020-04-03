@@ -25,6 +25,7 @@
         </div>
       </div>
     </main>
+    <card-modal v-if="showCardModal" ref="card-modal"></card-modal>
   </div>
 </template>
 
@@ -35,6 +36,8 @@ import BoardList from './components/list';
 import api from '@/api';
 import draggable from 'vuedraggable';
 import lib from '@/lib';
+import eventBus from './eventBus.js';
+import CardModal from './components/card-modal';
 // import { Board, BoardResponse } from '@/declare/board';
 // import { List, ListResponse } from '@/declare/list';
 
@@ -42,7 +45,8 @@ import lib from '@/lib';
   components: {
     BoardHeader,
     BoardList,
-    draggable
+    draggable,
+    CardModal
   }
 })
 export default class PSBoard extends Vue {
@@ -57,6 +61,7 @@ export default class PSBoard extends Vue {
   };
 
   lists: List[] = [];
+  showCardModal: boolean = false;
 
   @Watch('$route', {
     immediate: true
@@ -68,6 +73,19 @@ export default class PSBoard extends Vue {
 
   get handleListChange () {
     return lib.debounceDelay(this.handleListOrderChanged, 2000);
+  }
+
+  mounted () {
+    eventBus.$on('on-close', () => {
+      this.showCardModal = false;
+    });
+    eventBus.$on('on-card-click', (card) => {
+      this.showCardModal = true;
+      this.$nextTick(() => {
+        const cardModal: any = this.$refs['card-modal'];
+        cardModal.show(card);
+      });
+    });
   }
 
   handleShowAddPanel () {
