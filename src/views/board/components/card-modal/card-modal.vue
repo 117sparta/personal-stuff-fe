@@ -14,7 +14,7 @@
     <section class="dialog-container">
       <article class="dialog-left">
         <section style="margin-bottom: 20px;">
-          <article style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px;">
+          <article class="section-title">
             <span class="block-align-middle el-icon-chat-line-square" style="margin-right: 10px;"></span>
             <span class="block-align-middle">描述</span>
           </article>
@@ -35,10 +35,30 @@
             </div>
           </div>
         </section>
+        <stuff-list-item v-for="item in card.stuffLists" :key="item.id" :list="item"></stuff-list-item>
       </article>
       <aside class="dialog-aside">
         <div style="margin-bottom: 4px;">添加到卡片</div>
-        <div class="aside-item"><span class="el-icon-document-checked aside-item-icon"></span>清单</div>
+        <el-popover
+          trigger="manual"
+          placement="bottom-start"
+          :visible-arrow="false"
+          :value="showNewStuffListPanel">
+          <header class="new-stuff-list-panel-header"><span>添加清单到卡片</span><el-button size="small" class="new-stuff-list-panel-header-close-btn" @click="handleCloseNewStuffListPanel">✖️</el-button></header>
+          <main class="new-stuff-list-panel-main">
+            <el-form ref="form" :model="newStuffList" :inline="true">
+              <el-form-item prop="title" :rules="[
+                { required: true, trigger: 'blur', message: '请输入清单标题' }
+              ]">
+                <el-input ref="stuff-input" type="text" size="small" v-model="newStuffList.title" placeholder="请输入清单标题"></el-input>
+              </el-form-item>
+            </el-form>
+          </main>
+          <footer><el-button type="success" size="small" @click="handleCreateNewStuffList">确定</el-button></footer>
+          <div class="aside-item" slot="reference" @click="handleShowNewStuffListPanel">
+            <span class="el-icon-document-checked aside-item-icon"></span>清单
+          </div>
+        </el-popover>
         <div class="aside-item"><span class="el-icon-price-tag aside-item-icon"></span>标签</div>
       </aside>
     </section>
@@ -51,10 +71,19 @@ import eventBus from '../../eventBus.js';
 import mavonEditor from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
 import api from '@/api';
+import StuffListItem from './components/stuff-list-item';
+
+interface StuffList {
+  id?: number;
+  title: string;
+  updatedAt?: number | string;
+  createdAt?: number | string;
+}
 
 @Component({
   components: {
-    mavonEditor: mavonEditor.mavonEditor
+    mavonEditor: mavonEditor.mavonEditor,
+    StuffListItem
   }
 })
 export default class CardModal extends Vue {
@@ -64,6 +93,10 @@ export default class CardModal extends Vue {
   defaultOpen: string = 'edit'; // 'edit' || 'preview'
   originContent: string = '';
   showTitleInput: boolean = false;
+  showNewStuffListPanel: boolean = false;
+  newStuffList: StuffList = {
+    title: ''
+  };
 
   show (card) {
     this.card = JSON.parse(JSON.stringify(card));
@@ -134,6 +167,32 @@ export default class CardModal extends Vue {
       this.card = cardInfo;
     });
   }
+
+  handleShowNewStuffListPanel () {
+    this.showNewStuffListPanel = true;
+    this.$nextTick(() => {
+      const stuffListInput: any = this.$refs['stuff-input'];
+      stuffListInput.focus();
+    });
+  }
+
+  handleCloseNewStuffListPanel () {
+    this.showNewStuffListPanel = false;
+  }
+
+  handleCreateNewStuffList () {
+    const form: any = this.$refs.form;
+    form.validate((valid: boolean) => {
+      if (valid) {
+        api.stuffList.createStuffList(this.newStuffList, this.card.id).then(() => {
+          this.showNewStuffListPanel = false;
+          this.handleQueryCardInfo();
+        }).catch(err => {
+          console.log(err);
+        });
+      }
+    });
+  }
 }
 </script>
 
@@ -162,22 +221,30 @@ export default class CardModal extends Vue {
 }
 
 .dialog-container {
+  color: black;
   display: flex;
   justify-content: space-between;
   align-items: top;
   .dialog-left {
     flex-grow: 1;
     margin-right: 30px;
+    .section-title {
+      padding-left: 8px;
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
     .description-tip {
+      margin-left: 1.1em;
       color: #595959;
-      background-color: #eee;
+      background-color: rgba(243, 243, 243, 0.781);
       border-radius: 4px;
       padding: 20px 0 40px 5px;
       cursor: pointer;
       transition: background-color .3s;
     }
     .description-tip:hover {
-      background-color: #ccc;
+      background-color: rgba(240, 240, 240, 1);
     }
     .edit-container {
       padding: 5px 5px 5px 0;
@@ -192,7 +259,7 @@ export default class CardModal extends Vue {
     width: 180px;
     .aside-item {
       padding: 5px 5px 5px 10px;
-      background-color: #ebecf0;
+      background-color: rgba(240, 240, 240, 0.6);
       margin-bottom: 5px;
       color: black;
       border-radius: 2px;
@@ -203,8 +270,26 @@ export default class CardModal extends Vue {
       }
     }
     .aside-item:hover {
-      background-color: #e2e4e9;
+      background-color: rgba(230, 230, 230, 0.6);
     }
+  }
+}
+
+.new-stuff-list-panel {
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    &-close-btn {
+      padding: 2px 0 1px 3px;
+      text-align: center;
+      font-size: 1em;
+      border: none;
+    }
+  }
+  &-main {
+    margin-top: 12px;
   }
 }
 </style>
