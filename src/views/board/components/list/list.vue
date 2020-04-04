@@ -1,7 +1,8 @@
 <template>
   <div class="list-container">
+    <div class="flex-container">
     <div v-if="showEditInput">
-      <el-input style="white-space: pre-wrap;" ref="title-input" maxlength="14" placeholder="请输入列表标题" v-model="editingTitle" @keydown.native.enter="handleUpdateList" show-word-limit @blur="handleEditCancel"></el-input>
+      <el-input style="font-size: 1em; font-weight: bolder;margin-top: 2px;" ref="title-input" maxlength="14" placeholder="请输入列表标题" v-model="editingTitle" @keydown.native.enter="handleUpdateList" show-word-limit @blur="handleEditCancel"></el-input>
     </div>
     <div v-else class="list-title">{{list.title}}<span class="el-icon-edit list-title-icon" @click="handleEditTitle"></span></div>
     <section class="card-list-container">
@@ -26,6 +27,7 @@
         </div>
       </article>
     </section>
+    </div>
   </div>
 </template>
 
@@ -153,46 +155,55 @@ export default class BoardList extends Vue {
 .list-container {
   display: inline-block;
   width: 300px;
-  background-color: #eee;
-  max-height: 100%;
+  height: 100%;
   margin-left: 10px;
-  padding: 2px;
   overflow: auto;
   border-radius: 5px;
   vertical-align: top;
-  box-shadow: 0 0 4px #ddd;
-  .list-title {
-    padding: 10px 8px;
-    text-align: left;
-    font-size: 1em;
-    font-weight: bold;
-    &-icon {
-      margin-left: 10px;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
+  .flex-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-height: 99%;
+    box-shadow: 0 0 4px #ddd;
+    border-radius: 5px;
+    background-color: #eee;
+    padding: 2px;
+    .list-title {
+      flex-grow: 0;
+      padding: 10px 8px;
+      text-align: left;
+      font-size: 1em;
+      font-weight: bold;
+      &-icon {
+        margin-left: 10px;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+      }
+      &-icon:hover {
+        background-color: rgba(138, 138, 138, 0.5);
+      }
     }
-    &-icon:hover {
-      background-color: rgba(138, 138, 138, 0.5);
+    .add-card-footer {
+      flex-grow: 0;
+      &-btn {
+        color: #aaa;
+        padding: 4px;
+        border-radius: 2px;
+        background-color: white;
+        text-align: center;
+        cursor: pointer;
+      }
+      &-btn:hover {
+        background-color: rgba(254, 254, 254, 0.7);
+      }
     }
-  }
-  .add-card-footer {
-    &-btn {
-      color: #aaa;
-      padding: 4px;
-      border-radius: 2px;
-      background-color: white;
-      text-align: center;
-      cursor: pointer;
+    .card-list-container {
+      flex-grow: 1;
+      overflow: auto;
+      padding: 0 6px;
     }
-    &-btn:hover {
-      background-color: rgba(254, 254, 254, 0.7);
-    }
-  }
-  .card-list-container {
-    max-height: 91%;
-    overflow: auto;
-    padding: 0 6px;
   }
 }
 </style>
