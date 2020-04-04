@@ -10,6 +10,7 @@ export default [
   {
     path: '/home',
     name: 'home',
+    redirect: '/home/board',
     component: () => import('@/views/home'),
     children: [
       {

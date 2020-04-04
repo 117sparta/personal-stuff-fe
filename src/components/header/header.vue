@@ -2,7 +2,7 @@
   <section class="header-container">
     <div class="header-container-cover">
       <div class="left">
-        <el-button type="default" size="small">
+        <el-button type="default" size="small" @click="handleBackHome">
           <span class="el-icon-house" style="font-size: 1.1em;"></span>
         </el-button>
         <el-dropdown trigger="click" style="margin-left: 10px;">
@@ -10,7 +10,7 @@
             <span style="font-size: 0.6em;">看板</span>
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="item in boardList" icon="el-icon-date" :key="item.id">{{item.title}}</el-dropdown-item>
+            <el-dropdown-item v-for="item in boardList" icon="el-icon-date" :key="item.id" @click.native.stop="handleGoToBoard(item)">{{item.title}}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <el-input suffix-icon="el-icon-search" style="width: 40%; margin-left: 10px; color: blue;" size="small" v-model="hehe"></el-input>
@@ -41,6 +41,19 @@ export default class Header extends Vue {
     api.board.queryBoardList().then(({ boardList }: BoardResponse) => {
       this.$store.dispatch('board/setBoardList', boardList);
     });
+  }
+
+  handleBackHome () {
+    if (this.$route.fullPath !== '/home/board') {
+      this.$router.push({ path: '/home/board' });
+    }
+  }
+
+  handleGoToBoard (board) {
+    const reg = new RegExp(`${board.boardId}`, 'gi');
+    if (!reg.test(this.$route.fullPath)) {
+      this.$router.push({ path: '/board/' + board.boardId });
+    }
   }
 }
 </script>
