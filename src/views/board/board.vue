@@ -72,7 +72,7 @@ export default class PSBoard extends Vue {
   }
 
   get handleListChange () {
-    return lib.debounceDelay(this.handleListOrderChanged, 2000);
+    return lib.debounceDelay(this.handleListOrderChanged, 1500);
   }
 
   mounted () {
