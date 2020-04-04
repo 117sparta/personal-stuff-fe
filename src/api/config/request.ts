@@ -30,8 +30,10 @@ instance.interceptors.response.use(response => {
     isJson = false;
   }
   if (isJson) {
+    console.log(JSON.parse(data));
     return Promise.resolve(JSON.parse(data));
   } else {
+    console.log(data);
     return Promise.resolve(data);
   }
 }, error => {

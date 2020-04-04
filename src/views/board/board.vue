@@ -25,7 +25,7 @@
         </div>
       </div>
     </main>
-    <card-modal v-if="showCardModal" ref="card-modal"></card-modal>
+    <card-modal v-if="showCardModal" ref="card-modal" @refreshSingleList="handleGetList"></card-modal>
   </div>
 </template>
 
@@ -115,6 +115,7 @@ export default class PSBoard extends Vue {
   }
 
   handleGetList (listId) {
+    console.log(listId);
     api.list.queryList(this.board.id, listId).then((res: any) => {
       const length = this.lists.length;
       for (let i = 0; i < length; i++) {

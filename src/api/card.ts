@@ -27,7 +27,17 @@ function updateCard (cardList, listId?) {
   );
 }
 
+function queryCardInfo (cardId: number) {
+  return requestObj.post(
+    '/card/queryCardInfo',
+    {
+      cardId
+    }
+  );
+}
+
 export default {
   createCard,
-  updateCard
+  updateCard,
+  queryCardInfo
 };
