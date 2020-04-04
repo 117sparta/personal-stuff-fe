@@ -10,6 +10,7 @@
       rows="2"
       placeholder="回车确定新建"
       @keydown.native.enter="handleCreateNewCard"
+      @click.native.stop
     ></el-input>
     <article v-else>{{card && card.title}}</article>
   </section>

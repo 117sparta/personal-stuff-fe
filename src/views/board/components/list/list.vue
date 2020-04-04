@@ -101,6 +101,7 @@ export default class BoardList extends Vue {
   }
 
   handleRefreshList () {
+    this.showCardTitleInput = false;
     this.$parent.$emit('refreshSingleList', this.list.id); // 刷新列表
   }
 

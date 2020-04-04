@@ -18,7 +18,7 @@
         <span>新建列表</span>
       </div>
       <div class="new-list-panel" v-show="showAddPanel">
-        <el-input v-model="listTitle" style="width: 300px;" maxlength="14" placeholder="请输入列表标题"></el-input>
+        <el-input v-model="listTitle" style="width: 300px;" maxlength="14" show-word-limit placeholder="请输入列表标题"></el-input>
         <div class="button-group">
           <el-button size="small" type="success" @click="handleCreateNewList">确定</el-button>
           <el-button size="small" @click="handleCancelAddList">取消</el-button>
