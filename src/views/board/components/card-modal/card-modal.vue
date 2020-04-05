@@ -35,7 +35,9 @@
             </div>
           </div>
         </section>
-        <stuff-list-item v-for="item in card.stuffLists" :key="item.id" :list="item" @refreshCard="handleQueryCardInfo"></stuff-list-item>
+        <draggable v-model="card.stuffLists" @change="handleUpdateStuffListsOrder">
+          <stuff-list-item v-for="item in card.stuffLists" :key="item.id" :list="item" @refreshCard="handleQueryCardInfo"></stuff-list-item>
+        </draggable>
       </article>
       <aside class="dialog-aside">
         <div style="margin-bottom: 4px;">添加到卡片</div>
@@ -72,6 +74,7 @@ import mavonEditor from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
 import api from '@/api';
 import StuffListItem from './components/stuff-list-item';
+import draggable from 'vuedraggable';
 
 interface StuffList {
   id?: number;
@@ -83,7 +86,8 @@ interface StuffList {
 @Component({
   components: {
     mavonEditor: mavonEditor.mavonEditor,
-    StuffListItem
+    StuffListItem,
+    draggable
   }
 })
 export default class CardModal extends Vue {
@@ -164,6 +168,11 @@ export default class CardModal extends Vue {
 
   handleQueryCardInfo () {
     api.card.queryCardInfo(this.card.id).then(({ cardInfo }: any) => {
+      if (cardInfo.stuffLists && Array.isArray(cardInfo.stuffLists)) {
+        cardInfo.stuffLists.sort((a, b) => {
+          return a.stuffListOrder - b.stuffListOrder;
+        });
+      }
       this.card = cardInfo;
     });
   }
@@ -191,6 +200,18 @@ export default class CardModal extends Vue {
           console.log(err);
         });
       }
+    });
+  }
+
+  handleUpdateStuffListsOrder () {
+    const stuffLists = this.card.stuffLists;
+    stuffLists.forEach((item, index) => {
+      item.stuffListOrder = index + 1;
+    });
+    api.stuffList.updateStuffList(stuffLists).then(() => {
+      this.handleQueryCardInfo();
+    }).catch(err => {
+      console.log(err);
     });
   }
 }

@@ -13,13 +13,14 @@ function createStuffList (stuffList, cardId) {
   );
 }
 
-function updateStuffList (stuffList) {
+function updateStuffList (stuffLists) {
+  stuffLists.forEach(item => {
+    item.updatedAt = generateTimeStamp();
+  });
+  const data = JSON.stringify(stuffLists);
   return requestObj.post(
     '/stuffList/updateStuffList',
-    {
-      ...stuffList,
-      updatedAt: generateTimeStamp()
-    }
+    data
   );
 }
 

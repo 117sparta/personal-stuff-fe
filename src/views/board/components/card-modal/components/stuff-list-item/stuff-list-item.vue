@@ -1,9 +1,21 @@
 <template>
   <section style="margin-bottom: 20px;">
     <article class="section-title">
-      <div>
-        <span class="block-align-middle el-icon-document-checked" style="margin-right: 10px;"></span>
-        <span class="block-align-middle">{{list.title}}</span>
+      <span class="el-icon-document-checked" style="margin-right: 10px;"></span>
+      <div style="flex-grow: 1;">
+        <el-input
+          style="display: inline-block; vertical-align: top; width: 80%;"
+          v-if="showTitleInput"
+          type="text"
+          maxlength="32"
+          show-word-limit
+          v-model="list.title"
+          size="small"
+          ref="title-input"
+          @blur="handleUpdateStuffList"
+          @keydown.enter.native="handleUpdateStuffList"
+        ></el-input>
+        <span v-else class="block-align-middle" style="cursor: pointer;" @click="handleShowTitleInput">{{list.title}}</span>
       </div>
       <div><button class="section-title-delete-button" @click.stop="handleDeleteStuffList">删除</button></div>
     </article>
@@ -51,6 +63,8 @@ export default class StuffListItem extends Vue {
 
   showAddStuffListItemInput: boolean = false;
   newStuffListItemText: string = '';
+  showTitleInput: boolean = false;
+  originalContent: string = '';
 
   @Watch('list', {
     immediate: true
@@ -119,6 +133,32 @@ export default class StuffListItem extends Vue {
     }).catch(err => {
       console.log(err);
     });
+  }
+
+  handleShowTitleInput () {
+    this.showTitleInput = true;
+    this.originalContent = this.list.title;
+    this.$nextTick(() => {
+      const titleInput: any = this.$refs['title-input'];
+      if (titleInput) {
+        titleInput.focus();
+      }
+    });
+  }
+
+  handleUpdateStuffList () {
+    api.stuffList.updateStuffList([this.list]).then(() => {
+      this.$emit('refreshCard');
+      this.showTitleInput = false;
+      this.originalContent = '';
+    }).catch(err => {
+      console.log(err);
+    });
+  }
+
+  handleCancelUpdateTitle () {
+    this.list.title = this.originalContent;
+    this.showTitleInput = false;
   }
 }
 </script>
