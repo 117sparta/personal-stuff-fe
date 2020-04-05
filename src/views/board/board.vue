@@ -83,7 +83,9 @@ export default class PSBoard extends Vue {
       this.showCardModal = true;
       this.$nextTick(() => {
         const cardModal: any = this.$refs['card-modal'];
-        cardModal.show(card);
+        if (cardModal) {
+          cardModal.show(card);
+        }
       });
     });
   }

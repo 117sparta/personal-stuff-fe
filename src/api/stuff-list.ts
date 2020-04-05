@@ -13,17 +13,40 @@ function createStuffList (stuffList, cardId) {
   );
 }
 
-function updateStuffList (stuffLists, cardId?) {
+function updateStuffList (stuffList) {
   return requestObj.post(
     '/stuffList/updateStuffList',
-    JSON.stringify({
-      stuffLists,
-      cardId
-    })
+    {
+      ...stuffList,
+      updatedAt: generateTimeStamp()
+    }
+  );
+}
+
+function createStuffListItem (stuffListItem, stuffListId) {
+  return requestObj.post(
+    '/stuffList/createStuffListItem',
+    {
+      ...stuffListItem,
+      createdAt: generateTimeStamp(),
+      updatedAt: generateTimeStamp(),
+      stuffListId
+    }
+  );
+}
+
+// update 函数的逻辑（基本上所有类别的update逻辑都是），如果stuffListItems的长度为1，那么为更新列表信息，否则就是更换顺序。
+function updateStuffListItems (stuffListItems) {
+  const data = JSON.stringify(stuffListItems);
+  return requestObj.post(
+    '/stuffList/updateStuffListItem',
+    data
   );
 }
 
 export default {
   createStuffList,
-  updateStuffList
+  updateStuffListItems,
+  updateStuffList,
+  createStuffListItem
 };

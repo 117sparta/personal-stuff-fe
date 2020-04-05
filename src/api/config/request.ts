@@ -8,6 +8,8 @@ const instance = httpRequester.create({
 });
 
 instance.interceptors.request.use(config => {
+  if (process.env === 'development') console.log(`%c[${config.method}][RQ] ${config.url.substring(config.url.lastIndexOf('/') + 1)}`, 'color: orange; font-size: 14px; font-weight: bold;');
+  if (process.env === 'development') console.log(config.data);
   if (config.method.toLocaleLowerCase() === 'post') {
     config.headers['Content-type'] = 'application/x-www-form-urlencoded';
     if (typeof config.data !== 'string') {
@@ -22,6 +24,8 @@ instance.interceptors.request.use(config => {
 });
 
 instance.interceptors.response.use(response => {
+  const config = response.config;
+  if (process.env === 'development') console.log(`%c[${config.method}][RS] ${config.url.substring(config.url.lastIndexOf('/') + 1)}`, 'color: green; font-size: 14px; font-weight: bold;');
   const data = response.data.data;
   let isJson = true;
   try {
@@ -30,10 +34,10 @@ instance.interceptors.response.use(response => {
     isJson = false;
   }
   if (isJson) {
-    console.log(JSON.parse(data));
+    if (process.env === 'development') console.log(JSON.parse(data));
     return Promise.resolve(JSON.parse(data));
   } else {
-    console.log(data);
+    if (process.env === 'development') console.log(data);
     return Promise.resolve(data);
   }
 }, error => {

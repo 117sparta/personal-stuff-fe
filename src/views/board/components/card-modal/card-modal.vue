@@ -35,7 +35,7 @@
             </div>
           </div>
         </section>
-        <stuff-list-item v-for="item in card.stuffLists" :key="item.id" :list="item"></stuff-list-item>
+        <stuff-list-item v-for="item in card.stuffLists" :key="item.id" :list="item" @refreshCard="handleQueryCardInfo"></stuff-list-item>
       </article>
       <aside class="dialog-aside">
         <div style="margin-bottom: 4px;">添加到卡片</div>

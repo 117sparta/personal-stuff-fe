@@ -5,13 +5,15 @@
       <span class="block-align-middle">{{list.title}}</span>
     </article>
     <article class="stuff-list-checkbox-container">
-      <div class="stuff-list-checkbox" v-for="(item, index) in list.stuffListItems" :key="item.id">
-        <div
-          :class="['stuff-list-checkbox-left', (item.isChecked ? 'stuff-list-checkbox-left-active' : '')]"
-          @click="handleCheckboxClicked($event, list, index)"
-        >{{item.isChecked ? '✔' : ''}}</div>
-        <div :class="`stuff-list-checkbox-right ${item.isChecked ? 'stuff-list-checkbox-right-active' : ''}`">{{item.text}}</div>
-      </div>
+      <draggable v-model="list.stuffListItems" @change="handleStuffListItemOrderChanged">
+        <div class="stuff-list-checkbox" v-for="(item, index) in list.stuffListItems" :key="item.id">
+          <div
+            :class="['stuff-list-checkbox-left', (item.isChecked ? 'stuff-list-checkbox-left-active' : '')]"
+            @click="handleCheckboxClicked($event, list, index)"
+          >{{item.isChecked ? '✔' : ''}}</div>
+          <div :class="`stuff-list-checkbox-right ${item.isChecked ? 'stuff-list-checkbox-right-active' : ''}`">{{item.text}}</div>
+        </div>
+      </draggable>
       <section class="stuff-list-add-item">
         <article v-if="showAddStuffListItemInput">
           <el-input style="font-size: 1.1em;" type="textarea" v-model="newStuffListItemText" ref="new-stuff-list-item-input" :rows="1"></el-input>
@@ -27,9 +29,15 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import draggable from 'vuedraggable';
+import api from '@/api';
 
-@Component({})
+@Component({
+  components: {
+    draggable
+  }
+})
 export default class StuffListItem extends Vue {
   @Prop({
     type: Object,
@@ -38,6 +46,15 @@ export default class StuffListItem extends Vue {
 
   showAddStuffListItemInput: boolean = false;
   newStuffListItemText: string = '';
+
+  @Watch('list', {
+    immediate: true
+  })
+  onListChanged () {
+    this.list.stuffListItems.sort((a, b) => {
+      return a.listItemOrder - b.listItemOrder;
+    });
+  }
 
   handleCheckboxClicked (_, list, index) {
     const item = list.stuffListItems[index];
@@ -54,9 +71,10 @@ export default class StuffListItem extends Vue {
   }
 
   handleCreateNewStuffItem () {
-    Promise.resolve(true).then(() => {
+    api.stuffList.createStuffListItem({ text: this.newStuffListItemText, isChecked: false }, this.list.id).then(() => {
       this.showAddStuffListItemInput = false;
       this.newStuffListItemText = '';
+      this.$emit('refreshCard');
     }).catch(err => {
       console.log(err);
     });
@@ -65,6 +83,16 @@ export default class StuffListItem extends Vue {
   handleCancelCreateNewStuffItem () {
     this.showAddStuffListItemInput = false;
     this.newStuffListItemText = '';
+  }
+
+  handleStuffListItemOrderChanged () {
+    const stuffListItems = this.list.stuffListItems;
+    stuffListItems.forEach((item, index) => {
+      item.listItemOrder = index + 1;
+    });
+    api.stuffList.updateStuffListItems(stuffListItems).then(() => {
+      this.$emit('refreshCard');
+    });
   }
 }
 </script>
