@@ -88,6 +88,9 @@ export default class PSBoard extends Vue {
         }
       });
     });
+    eventBus.$on('refreshSingleList', (listId) => {
+      this.handleGetList(listId);
+    });
   }
 
   handleShowAddPanel () {

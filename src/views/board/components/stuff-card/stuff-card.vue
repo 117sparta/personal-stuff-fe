@@ -12,7 +12,15 @@
       @keydown.native.enter="handleCreateNewCard"
       @click.native.stop
     ></el-input>
-    <article v-else>{{card && card.title}}</article>
+    <article style="position: relative;" v-else>
+      <span>{{card && card.title}}</span>
+      <el-dropdown class="more-list" trigger="hover" placement="bottom-end">
+        <span class="el-icon-more el-dropdown-link" @click.stop></span>
+        <el-dropdown-menu>
+          <el-dropdown-item style="color: red;" @click.native="handleDeleteCard"><span class="el-icon-delete" style="margin-right: 4px;"></span><span>删除</span></el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </article>
   </section>
 </template>
 
@@ -74,6 +82,12 @@ export default class StuffCard extends Vue {
   handleShowCardModal () {
     eventBus.$emit('on-card-click', this.card);
   }
+
+  handleDeleteCard () {
+    api.card.deleteCard(this.card.id).then(() => {
+      eventBus.$emit('refreshSingleList', this.card.listId);
+    });
+  }
 }
 </script>
 
@@ -86,9 +100,24 @@ export default class StuffCard extends Vue {
   border-radius: 3px;
   box-shadow: 0 1px 2px #ccc;
   cursor: pointer;
+  .more-list {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 4px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .more-list:hover {
+    background-color: #eee;
+  }
 }
 
 .card-container:hover {
   border: 1px solid #26c9ff;
+  .more-list {
+    display: inline;
+  }
 }
 </style>

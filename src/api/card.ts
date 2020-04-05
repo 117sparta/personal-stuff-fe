@@ -36,8 +36,18 @@ function queryCardInfo (cardId: number) {
   );
 }
 
+function deleteCard (cardId: number) {
+  return requestObj.post(
+    '/card/deleteCard',
+    {
+      cardId
+    }
+  );
+}
+
 export default {
   createCard,
   updateCard,
-  queryCardInfo
+  queryCardInfo,
+  deleteCard
 };
