@@ -1,8 +1,11 @@
 <template>
   <section style="margin-bottom: 20px;">
     <article class="section-title">
-      <span class="block-align-middle el-icon-document-checked" style="margin-right: 10px;"></span>
-      <span class="block-align-middle">{{list.title}}</span>
+      <div>
+        <span class="block-align-middle el-icon-document-checked" style="margin-right: 10px;"></span>
+        <span class="block-align-middle">{{list.title}}</span>
+      </div>
+      <div><button class="section-title-delete-button" @click.stop="handleDeleteStuffList">删除</button></div>
     </article>
     <article class="stuff-list-checkbox-container">
       <draggable v-model="list.stuffListItems" @change="handleStuffListItemOrderChanged">
@@ -11,12 +14,14 @@
             :class="['stuff-list-checkbox-left', (item.isChecked ? 'stuff-list-checkbox-left-active' : '')]"
             @click="handleCheckboxClicked($event, list, index)"
           >{{item.isChecked ? '✔' : ''}}</div>
-          <div :class="`stuff-list-checkbox-right ${item.isChecked ? 'stuff-list-checkbox-right-active' : ''}`">{{item.text}}</div>
+          <div :class="`stuff-list-checkbox-right ${item.isChecked ? 'stuff-list-checkbox-right-active' : ''}`">{{item.text}}
+            <span class="el-icon-delete stuff-list-checkbox-right-delete" size="mini" @click.stop="handleDeleteStuffListItem($event, item)"></span>
+          </div>
         </div>
       </draggable>
       <section class="stuff-list-add-item">
         <article v-if="showAddStuffListItemInput">
-          <el-input style="font-size: 1.1em;" type="textarea" v-model="newStuffListItemText" ref="new-stuff-list-item-input" :rows="1"></el-input>
+          <el-input style="font-size: 1.1em;" type="textarea" v-model="newStuffListItemText" maxlength="36" show-word-limit ref="new-stuff-list-item-input" :rows="1"></el-input>
           <section class="btn-group">
             <el-button type="success" size="small" @click="handleCreateNewStuffItem">保存项目</el-button>
             <el-button class="el-icon-close" circle size="small" @click="handleCancelCreateNewStuffItem"></el-button>
@@ -59,6 +64,11 @@ export default class StuffListItem extends Vue {
   handleCheckboxClicked (_, list, index) {
     const item = list.stuffListItems[index];
     item.isChecked = !item.isChecked;
+    api.stuffList.updateStuffListItems([item]).then(() => {
+      this.$emit('refreshCard');
+    }).catch(err => {
+      console.log(err);
+    });
   }
 
   handleShowAddNewStuffItemInput () {
@@ -94,6 +104,22 @@ export default class StuffListItem extends Vue {
       this.$emit('refreshCard');
     });
   }
+
+  handleDeleteStuffListItem (_, item) {
+    api.stuffList.deleteStuffListItem(item.id).then(() => {
+      this.$emit('refreshCard');
+    }).catch(err => {
+      console.log(err);
+    });
+  }
+
+  handleDeleteStuffList () {
+    api.stuffList.deleteStuffList(this.list.id).then(() => {
+      this.$emit('refreshCard');
+    }).catch(err => {
+      console.log(err);
+    });
+  }
 }
 </script>
 
@@ -107,6 +133,23 @@ export default class StuffListItem extends Vue {
   font-size: 1.3em;
   font-weight: bold;
   margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &-delete-button {
+    font-size: 0.6em;
+    padding: 8px 12px;
+    border-radius: 4px;
+    box-shadow: 0 0 2px #eee;
+    cursor: pointer;
+    background-color: rgba(240, 240, 240, 0.781);
+    outline: none;
+    border: none;
+    transition: all .3s;
+  }
+  &-delete-button:hover {
+    background-color: rgba(230, 230, 230, 1);
+  }
 }
 .stuff-list-checkbox-container {
   .stuff-list-checkbox {
@@ -145,6 +188,21 @@ export default class StuffListItem extends Vue {
       font-size: 1.1em;
       flex-grow: 1;
       transition: all .4s;
+      position: relative;
+      &-delete {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 5px;
+        color: red;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+      &-delete:hover {
+        background-color: rgb(230, 230, 230);
+      }
     }
     &-right-active {
       text-decoration: line-through;
@@ -153,6 +211,9 @@ export default class StuffListItem extends Vue {
   .stuff-list-checkbox:hover {
     background-color: rgba(243, 243, 243, 0.781);
     cursor: pointer;
+    .stuff-list-checkbox-right-delete {
+      display: inline;
+    }
   }
   .stuff-list-add-item {
     padding-left: 31px;
