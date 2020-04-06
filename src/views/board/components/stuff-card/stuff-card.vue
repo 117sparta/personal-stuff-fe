@@ -12,7 +12,7 @@
       @keydown.native.enter="handleCreateNewCard"
       @click.native.stop
     ></el-input>
-    <article style="position: relative;" v-else>
+    <article style="position: relative; white-space: pre-wrap;" v-else>
       <span>{{card && card.title}}</span>
       <el-dropdown class="more-list" trigger="hover" placement="bottom-end">
         <span class="el-icon-more el-dropdown-link" @click.stop></span>
@@ -20,6 +20,10 @@
           <el-dropdown-item style="color: red;" @click.native="handleDeleteCard"><span class="el-icon-delete" style="margin-right: 4px;"></span><span>删除</span></el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+    </article>
+    <article class="status-bar">
+      <span v-if="card.description" class="el-icon-chat-line-square status" :key="1"></span>
+      <span v-if="card.deadline" :key="2"></span>
     </article>
   </section>
 </template>
@@ -111,6 +115,17 @@ export default class StuffCard extends Vue {
   }
   .more-list:hover {
     background-color: #eee;
+  }
+  .status-bar {
+    color: #999;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    .status {
+      margin: 3px 6px;
+    }
   }
 }
 

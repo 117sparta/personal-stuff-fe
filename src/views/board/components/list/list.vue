@@ -4,7 +4,15 @@
     <div v-if="showEditInput">
       <el-input style="font-size: 1em; font-weight: bolder;margin-top: 2px;" ref="title-input" maxlength="14" placeholder="请输入列表标题" v-model="editingTitle" @keydown.native.enter="handleUpdateList" show-word-limit @blur="handleEditCancel"></el-input>
     </div>
-    <div v-else class="list-title">{{list.title}}<span class="el-icon-edit list-title-icon" @click="handleEditTitle"></span></div>
+    <div v-else class="list-title">
+      <span>{{list.title}}</span><span class="el-icon-edit list-title-icon" @click="handleEditTitle"></span>
+      <el-dropdown class="more-list" trigger="hover" placement="bottom-end">
+        <span class="el-icon-more el-dropdown-link" @click.stop></span>
+        <el-dropdown-menu>
+          <el-dropdown-item style="color: red;" @click.native="handleDeleteList"><span class="el-icon-delete" style="margin-right: 4px;"></span><span>删除</span></el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
     <section class="card-list-container">
       <draggable tag="div"
         style="max-height: 100%; overflow: auto;"
@@ -148,6 +156,12 @@ export default class BoardList extends Vue {
       });
     }
   }
+
+  handleDeleteList () {
+    api.list.deleteList(this.list.id).then(() => {
+      this.$parent.$emit('refreshList');
+    });
+  }
 }
 </script>
 
@@ -170,11 +184,24 @@ export default class BoardList extends Vue {
     background-color: #eee;
     padding: 2px;
     .list-title {
+      position: relative;
       flex-grow: 0;
       padding: 10px 8px;
       text-align: left;
       font-size: 1em;
       font-weight: bold;
+      .more-list {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 2px 4px;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+      .more-list:hover {
+        background-color: white;
+      }
       &-icon {
         margin-left: 10px;
         cursor: pointer;
@@ -183,6 +210,11 @@ export default class BoardList extends Vue {
       }
       &-icon:hover {
         background-color: rgba(138, 138, 138, 0.5);
+      }
+    }
+    .list-title:hover {
+      .more-list {
+        display: inline;
       }
     }
     .add-card-footer {

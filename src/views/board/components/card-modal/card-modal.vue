@@ -8,7 +8,7 @@
     >
     <header slot="title" class="card-title-container">
       <span class="el-icon-tickets block-align-top" style="font-size: 2em; margin-right: 10px;"></span>
-      <el-input v-if="showTitleInput" size="medium" v-model="card.title" style="display: inline-block;vertical-align: top; width: 78%; font-size: 1.4em;font-weight: bold;" @blur="handleSaveTitle" @keydown.native.enter="handleSaveTitle"></el-input>
+      <el-input v-if="showTitleInput" type="textarea" size="medium" v-model="card.title" style="display: inline-block;vertical-align: top; width: 78%; font-size: 1.4em;font-weight: bold;" @blur="handleSaveTitle" @keydown.native.enter="handleSaveTitle"></el-input>
       <span v-else class="block-align-top card-title" @click="handleEditTitle">{{(card && card.title) || ''}}<span class="el-icon-edit" style="margin-left: 12px;"></span></span>
     </header>
     <section class="dialog-container">
@@ -234,11 +234,15 @@ export default class CardModal extends Vue {
 
 .card-title-container {
   font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
 }
 
 .card-title {
   font-size: 1.5em;
   cursor: pointer;
+  margin-right: 18px;
 }
 
 .dialog-container {
