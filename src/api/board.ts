@@ -17,7 +17,7 @@ function queryBoardList (boardTitle?: string) {
   return requestObj.post(
     '/board/queryBoardList',
     {
-      title: boardTitle
+      title: boardTitle || ''
     }
   );
 }

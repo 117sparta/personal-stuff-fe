@@ -7,6 +7,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import MainPage from '@/views/main-page';
+import api from '@/api';
 
 @Component({
   components: {
@@ -21,6 +22,12 @@ export default class App extends Vue {
     if (this.$route.meta.title) {
       document.title = this.$route.meta.title;
     }
+  }
+
+  mounted () {
+    api.config.getPublicKey().then((res: any) => {
+      this.$store.dispatch('key/setPublicKey', res.publicKey);
+    });
   }
 }
 </script>

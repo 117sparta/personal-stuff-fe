@@ -120,7 +120,6 @@ export default class PSBoard extends Vue {
   }
 
   handleGetList (listId) {
-    console.log(listId);
     api.list.queryList(this.board.id, listId).then((res: any) => {
       const length = this.lists.length;
       for (let i = 0; i < length; i++) {
