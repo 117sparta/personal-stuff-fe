@@ -2,7 +2,6 @@ import httpRequester from 'axios';
 import qs from 'qs';
 import store from '@/store';
 import JSEncrypt from 'jsencrypt';
-import api from '@/api';
 import lib from '@/lib';
 
 const TIME_OUT = 10000;
