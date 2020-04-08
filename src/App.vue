@@ -8,6 +8,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import MainPage from '@/views/main-page';
 import api from '@/api';
+import lib from '@/lib';
 
 @Component({
   components: {
@@ -27,6 +28,17 @@ export default class App extends Vue {
   mounted () {
     api.config.getPublicKey().then((res: any) => {
       this.$store.dispatch('key/setPublicKey', res.publicKey);
+      const rsaKey = lib.generateRsaKey();
+      api.config.getRsaKey(rsaKey).then((res: any) => {
+        const word = res.encoded;
+        const decodedRsaKey = lib.aesDecrypt(word, rsaKey);
+        if (rsaKey === decodedRsaKey) {
+          lib.setAesKey(decodedRsaKey);
+          this.$store.dispatch('key/setRSAKey', decodedRsaKey);
+        }
+      }).catch(err => {
+        console.log(err);
+      });
     });
   }
 }

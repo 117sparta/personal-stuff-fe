@@ -2,29 +2,58 @@ import httpRequester from 'axios';
 import qs from 'qs';
 import store from '@/store';
 import JSEncrypt from 'jsencrypt';
+import api from '@/api';
+import lib from '@/lib';
 
-const TIME_OUT = 5000;
+const TIME_OUT = 10000;
 let totalTime = 0;
-const interval = 500;
+const interval = 200;
 
 function waitingForPublicKey () {
   return new Promise((resolve, reject) => {
+    if (store.getters['key/publicKey']) resolve();
     delay(resolve, reject);
+  });
+}
+
+function waitingForRsaKey () {
+  return new Promise((resolve, reject) => {
+    if (store.getters['key/rsaKey']) resolve();
+    delayForRsaKey(resolve, reject, 0, 300);
   });
 }
 
 function delay (resolve: Function, reject: Function) {
   setTimeout(() => {
-    const publicKey = store.getters['key/publicKey'];
-    if (publicKey) {
-      resolve(publicKey);
-    } else {
-      delay(resolve, reject);
-    }
     totalTime += interval;
     if (totalTime >= TIME_OUT) {
       totalTime = 0;
       reject('timeout');
+      return;
+    }
+    const publicKey = store.getters['key/publicKey'];
+    if (publicKey) {
+      store.dispatch('key/setPublicKey', publicKey);
+      resolve(publicKey);
+    } else {
+      delay(resolve, reject);
+    }
+  }, interval);
+}
+
+function delayForRsaKey (resolve: Function, reject: Function, totalTime: number, interval: number) {
+  setTimeout(() => {
+    totalTime += interval;
+    if (totalTime >= TIME_OUT) {
+      totalTime = 0;
+      reject('timeout');
+      return;
+    }
+    const rsaKey = store.getters['key/rsaKey'];
+    if (rsaKey) {
+      resolve();
+    } else {
+      delayForRsaKey(resolve, reject, totalTime, interval);
     }
   }, interval);
 }
@@ -41,22 +70,19 @@ instance.interceptors.request.use(async (config) => {
     console.log(config.data);
   }
   const publicKey = store.getters['key/publicKey'];
+  const storeRsaKey = store.getters['key/rsaKey'];
   const encrypt = new JSEncrypt(); // 实例化加密对象
-  if (!(/getPublicKey/i.test(config.url)) && !publicKey) {
+  if (!(/getPublicKey/i.test(config.url)) && !(/getrsakey/i.test(config.url)) && (!publicKey || !storeRsaKey)) {
     const res = await waitingForPublicKey();
     encrypt.setKey(res);
+    await waitingForRsaKey();
     if (config.method.toLocaleLowerCase() === 'post') {
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
-      if (config.data && typeof config.data !== 'string') {
-        config.data = qs.stringify({
-          data: encrypt.encrypt(JSON.stringify(config.data))
-        });
-      } else if (config.data) {
-        config.data = qs.stringify({ data: encrypt.encrypt(config.data) });
-      }
+      config.data = qs.stringify({ data: lib.aesEncrypt(config.data) });
     }
     return config;
-  } else if (publicKey) {
+  } else if (/getRsaKey/i.test(config.url)) { // 如果是为了传输AES加密的key，那么用RSA算法
+    if (!publicKey) await waitingForPublicKey();
     encrypt.setKey(publicKey);
     if (config.method.toLocaleLowerCase() === 'post') {
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
@@ -69,7 +95,7 @@ instance.interceptors.request.use(async (config) => {
       }
     }
     return config;
-  } else {
+  } else if ((/getPublicKey/i.test(config.url))) { // 获取服务器公钥，用明文发送
     if (config.method.toLocaleLowerCase() === 'post') {
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
       if (typeof config.data !== 'string') {
@@ -77,6 +103,12 @@ instance.interceptors.request.use(async (config) => {
       } else {
         config.data = qs.stringify({ data: config.data });
       }
+    }
+    return config;
+  } else { // 除去上面情况，用AES加密传输
+    if (config.method.toLocaleLowerCase() === 'post') {
+      config.headers['Content-type'] = 'application/x-www-form-urlencoded';
+      config.data = qs.stringify({ data: lib.aesEncrypt(config.data) });
     }
     return config;
   }
@@ -93,9 +125,9 @@ instance.interceptors.response.use(response => {
   if (publicKey) encrypt.setPublicKey(publicKey);
   if (process.env.NODE_ENV === 'development') console.log(`%c[${config.method}][RS] ${config.url.substring(config.url.lastIndexOf('/') + 1)}`, 'color: green; font-size: 14px; font-weight: bold;');
   let data = null;
-  if (response.config.url !== '/getPublicKey') {
-    data = encrypt.decrypt(response.data.data);
-  } else {
+  if (response.config.url !== '/getPublicKey' && response.config.url !== '/getRsaKey') {
+    data = lib.aesDecrypt(response.data.data);
+  } else { // getPublicKey和getRsaKey的原模原样返回
     data = response.data.data;
   }
   let isJson = true;

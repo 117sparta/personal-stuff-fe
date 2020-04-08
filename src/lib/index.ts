@@ -1,3 +1,15 @@
+import CryptoJS from 'crypto-js';
+
+let aesKey = '';
+
+function getAesKey () {
+  return aesKey;
+}
+
+function setAesKey (key) {
+  aesKey = key;
+}
+
 function dateToString (timestamp: number) {
   const dateObj = new Date(timestamp);
   const year = dateObj.getFullYear();
@@ -26,8 +38,61 @@ function debounceDelay (func, wait) {
   };
 }
 
+function generateRsaKey () {
+  const now = Date.now();
+  const ACharCode = 'A'.charCodeAt(0);
+  const length = 16;
+  let timeStr = now.toString(16);
+  if (timeStr.length < length) {
+    const numNeeded = 16 - timeStr.length;
+    for (let i = 0; i < numNeeded; i++) {
+      timeStr += String.fromCharCode(Math.floor((Math.random() * 26)) + ACharCode);
+    }
+    return timeStr;
+  } else {
+    return timeStr.slice(0, 16);
+  }
+}
+
+function aesEncrypt (word) {
+  let encrypted = '';
+  if (typeof word === 'string') {
+    encrypted = CryptoJS.AES.encrypt(word, aesKey, {
+      iv: aesKey,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+  } else if (typeof word === 'object') {
+    // 对象格式的转成json字符串
+    const data = JSON.stringify(word);
+    encrypted = CryptoJS.AES.encrypt(data, aesKey, {
+      iv: aesKey,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+  }
+  return encrypted.toString();
+}
+// aes解密
+function aesDecrypt (word: string, key?: string) {
+  const localKey = aesKey || key;
+  const srcs = CryptoJS.enc.Base64.parse(word).toString(CryptoJS.enc.Utf8);
+  const decrypt = CryptoJS.AES.decrypt(srcs, localKey, {
+    iv: localKey,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7
+  });
+  const decryptedStr = CryptoJS.enc.Utf8.stringify(decrypt);
+  return decryptedStr;
+}
+
 export default {
   dateToString,
   dateStrToTimestamp,
-  debounceDelay
+  debounceDelay,
+  generateRsaKey,
+  getAesKey,
+  setAesKey,
+  aesDecrypt,
+  aesEncrypt
 };

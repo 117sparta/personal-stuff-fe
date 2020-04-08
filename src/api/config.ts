@@ -6,6 +6,16 @@ function getPublicKey () {
   );
 }
 
+function getRsaKey (rsaKey: string) {
+  return requestObj.post(
+    '/getRsaKey',
+    {
+      rsaKey
+    }
+  );
+}
+
 export default {
-  getPublicKey
+  getPublicKey,
+  getRsaKey
 };
