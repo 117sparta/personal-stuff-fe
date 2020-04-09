@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <main-page></main-page> <!-- TODO 当加入登录机制之后，这边要进行条件判断 -->
+    <main-page v-if="isAuth"></main-page> <!-- TODO 当加入登录机制之后，这边要进行条件判断 -->
+    <router-view v-else />
   </div>
 </template>
 
@@ -23,6 +24,10 @@ export default class App extends Vue {
     if (this.$route.meta.title) {
       document.title = this.$route.meta.title;
     }
+  }
+
+  get isAuth () {
+    return this.$store.getters['user/isAuth'];
   }
 
   mounted () {

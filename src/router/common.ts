@@ -18,7 +18,8 @@ export default [
         name: 'home-board',
         component: () => import('@/views/home/home-board'),
         meta: {
-          title: '我的看板'
+          title: '我的看板',
+          needAuth: true
         }
       },
       {
@@ -26,7 +27,8 @@ export default [
         name: 'message-box',
         component: () => import('@/views/home/message-box'),
         meta: {
-          title: '消息页面'
+          title: '消息页面',
+          needAuth: true
         }
       }
     ]
@@ -36,7 +38,8 @@ export default [
     name: 'board',
     component: () => import('@/views/board'),
     meta: {
-      title: '看板页面'
+      title: '看板页面',
+      needAuth: true
     }
   },
   {

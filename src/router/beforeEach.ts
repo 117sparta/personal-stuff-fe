@@ -1,4 +1,12 @@
+import store from '@/store';
+
 export default function beforeEachHooks (to, from, next) {
-  if (to.fullPath === '/') next({ path: '/home' });
-  else next();
+  const isAuth = store.getters['user/isAuth'];
+  if (!isAuth && to.meta.needAuth) {
+    next({ path: '/login' }); // 没有登录，跳转到登录页
+  } else if ((isAuth && to.fullPath === '/') || (isAuth && to.fullPath === '/login')) {
+    next({ path: '/home' });
+  } else {
+    next();
+  }
 }
