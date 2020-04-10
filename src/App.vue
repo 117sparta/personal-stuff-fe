@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <main-page v-if="isAuth"></main-page> <!-- TODO 当加入登录机制之后，这边要进行条件判断 -->
+    <main-page v-if="isAuth"></main-page>
     <router-view v-else />
   </div>
 </template>
