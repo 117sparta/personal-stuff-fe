@@ -36,8 +36,15 @@ function verifyMailCode ({ account, code }) {
   );
 }
 
+function queryUserInfo () {
+  return requestObj.post(
+    '/user/queryUserInfo'
+  );
+}
+
 export default {
   login,
   register,
-  verifyMailCode
+  verifyMailCode,
+  queryUserInfo
 };

@@ -40,6 +40,12 @@ export default class App extends Vue {
         if (rsaKey === decodedRsaKey) {
           lib.setAesKey(decodedRsaKey);
           this.$store.dispatch('key/setRSAKey', decodedRsaKey);
+          const token = localStorage.getItem('token');
+          if (token) {
+            api.user.queryUserInfo().then((res: any) => {
+              this.$store.dispatch('user/setUserInfo', res.userInfo);
+            });
+          }
         }
       }).catch(err => {
         console.log(err);

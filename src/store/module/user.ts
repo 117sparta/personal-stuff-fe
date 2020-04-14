@@ -1,7 +1,7 @@
 export default {
   namespaced: true,
   state: {
-    isAuth: false,
+    isAuth: !!localStorage.getItem('token') || false,
     userInfo: {}
   },
   getters: {

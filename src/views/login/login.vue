@@ -73,8 +73,11 @@ export default class Login extends Vue {
     const loginForm: any = this.$refs['login-form'];
     loginForm.validate().then((valid) => {
       if (valid) {
-        api.user.login(this.loginForm).then(res => {
-          console.log(res);
+        api.user.login(this.loginForm).then((res: any) => {
+          this.$store.dispatch('user/setIsAuth', true);
+          this.$store.dispatch('user/setUserInfo', res.userInfo);
+          localStorage.setItem('token', res.token);
+          this.$router.push({ path: '/home' });
         });
       }
     }).catch(err => {

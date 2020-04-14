@@ -3,10 +3,17 @@ import qs from 'qs';
 import store from '@/store';
 import JSEncrypt from 'jsencrypt';
 import lib from '@/lib';
+import STATUS_CODE from '@/api/config/statusCode';
+import router from '@/router';
+import { Notification } from 'element-ui';
 
 const TIME_OUT = 10000;
 let totalTime = 0;
 const interval = 200;
+
+function getToken () {
+  return localStorage.getItem('token') || '';
+}
 
 function waitingForPublicKey () {
   return new Promise((resolve, reject) => {
@@ -77,6 +84,7 @@ instance.interceptors.request.use(async (config) => {
     await waitingForRsaKey();
     if (config.method.toLocaleLowerCase() === 'post') {
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
+      config.headers.Authorization = getToken();
       config.data = qs.stringify({ data: lib.aesEncrypt(config.data) });
     }
     return config;
@@ -107,6 +115,7 @@ instance.interceptors.request.use(async (config) => {
   } else { // 除去上面情况，用AES加密传输
     if (config.method.toLocaleLowerCase() === 'post') {
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
+      config.headers.Authorization = getToken();
       config.data = qs.stringify({ data: lib.aesEncrypt(config.data) });
     }
     return config;
@@ -134,6 +143,9 @@ instance.interceptors.response.use(response => {
     JSON.parse(data);
   } catch (e) {
     isJson = false;
+  }
+  if (data.statusCode === STATUS_CODE.UNAUTHORIZED) {
+    router.push({ path: '/login' });
   }
   if (isJson) {
     if (process.env.NODE_ENV === 'development') console.log(JSON.parse(data));
