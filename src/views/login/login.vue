@@ -76,6 +76,7 @@ export default class Login extends Vue {
         api.user.login(this.loginForm).then((res: any) => {
           this.$store.dispatch('user/setIsAuth', true);
           this.$store.dispatch('user/setUserInfo', res.userInfo);
+          localStorage.removeItem('token');
           localStorage.setItem('token', res.token);
           this.$router.push({ path: '/home' });
         });
