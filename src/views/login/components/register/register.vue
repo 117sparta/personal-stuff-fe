@@ -167,7 +167,7 @@ export default class Register extends Vue {
               });
               this.step += 1;
             } else if (res.statusCode === STATUS_CODE.FAIL_TO_VERIFY_CODE) {
-              Notification.success({
+              Notification.warning({
                 title: '无效的验证码',
                 message: '请检查是否正确'
               });
