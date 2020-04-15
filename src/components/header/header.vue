@@ -15,11 +15,14 @@
         </el-dropdown>
         <el-input suffix-icon="el-icon-search" style="width: 40%; margin-left: 10px; color: blue;" size="small" v-model="hehe"></el-input>
       </div>
-      <div class="right">
+      <div class="right" style="display: flex;align-items: center;">
         <el-button icon="el-icon-plus" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
         <el-button icon="el-icon-info" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
         <el-button icon="el-icon-bell" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
-        <el-avatar style="margin-left: 10px" :size="30" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
+        <el-popover trigger="manual" :value="popoverIsVisible">
+          <el-button type="danger" size="small" @click="handleLogOut">退出登录</el-button>
+          <el-avatar slot="reference" style="margin-left: 10px" @click.native="handleShowPopover" :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
+        </el-popover>
       </div>
     </div>
   </section>
@@ -32,6 +35,8 @@ import api from '@/api';
 @Component({})
 export default class Header extends Vue {
   hehe = '';
+
+  popoverIsVisible: boolean = false;
 
   get boardList () {
     return this.$store.getters['board/boardList'];
@@ -54,6 +59,16 @@ export default class Header extends Vue {
     if (!reg.test(this.$route.fullPath)) {
       this.$router.push({ path: '/board/' + board.boardId });
     }
+  }
+
+  handleLogOut () {
+    localStorage.removeItem('token');
+    this.$store.dispatch('user/setIsAuth', false);
+    this.$router.push({ path: '/login' });
+  }
+
+  handleShowPopover () {
+    this.popoverIsVisible = true;
   }
 }
 </script>

@@ -33,6 +33,8 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import api from '@/api';
+import { Notification } from 'element-ui';
+import STATUS_CODE from '@/api/config/statusCode';
 
 @Component({})
 export default class Register extends Vue {
@@ -136,18 +138,49 @@ export default class Register extends Vue {
     if (this.step === 1) { // 填账户
       form.validateField(['account'], (err) => {
         if (!err) {
-          this.step += 1;
-          // 这边写发送验证码逻辑
+          api.user.sendCode(this.registerForm.account).then((res: any) => { // 发送验证码逻辑
+            if (res.statusCode === STATUS_CODE.SUCCESS) {
+              Notification.success({
+                title: '成功',
+                message: '验证码发送成功，请注意查收',
+                duration: 0
+              });
+              this.step += 1;
+            } else {
+              Notification.warning({
+                title: '验证码发送失败',
+                message: '',
+                duration: 5000
+              });
+            }
+          });
         }
       });
     } else if (this.step === 2) { // 填验证码
       form.validateField(['code'], (err) => {
         if (!err) {
-          this.step += 1; // 这边写验证邮箱验证码逻辑。但是要在验证正确的情况下才让step加一
+          api.user.verifyMailCode(this.registerForm).then((res: any) => { // 验证验证码逻辑
+            if (res.statusCode === STATUS_CODE.SUCCESS) {
+              Notification.success({
+                title: '验证码正确',
+                message: ''
+              });
+              this.step += 1;
+            } else if (res.statusCode === STATUS_CODE.FAIL_TO_VERIFY_CODE) {
+              Notification.success({
+                title: '无效的验证码',
+                message: '请检查是否正确'
+              });
+            } else {
+              Notification.error({
+                title: '未知错误',
+                message: '您可以刷新重试'
+              });
+            }
+          });
         }
       });
     } else if (this.step === 3) { // step = 3的时候填写密码
-      console.log('active');
       const errMsg = [];
       let done = false;
       form.validateField(['password', 'passwordAgain', 'nickname'], (err) => {
@@ -159,16 +192,18 @@ export default class Register extends Vue {
       new Promise((resolve, reject) => {
         if (done) {
           if (errMsg.every(item => !item)) {
-            // 这边写注册逻辑
             resolve();
           } else {
             reject(new Error('not pass'));
           }
         }
       }).then(() => {
-        this.register().then((res) => {
-          console.log(res);
-          this.step += 1;
+        this.register().then((res: any) => {
+          if (res.statusCode === STATUS_CODE.SUCCESS) {
+            this.step += 1;
+          } else {
+            Notification.error('未知错误');
+          }
         }).catch(err => {
           console.log(err);
         });

@@ -36,6 +36,15 @@ function verifyMailCode ({ account, code }) {
   );
 }
 
+function sendCode (account: string) {
+  return requestObj.post(
+    '/user/generateCode',
+    {
+      account
+    }
+  );
+}
+
 function queryUserInfo () {
   return requestObj.post(
     '/user/queryUserInfo'
@@ -46,5 +55,6 @@ export default {
   login,
   register,
   verifyMailCode,
-  queryUserInfo
+  queryUserInfo,
+  sendCode
 };

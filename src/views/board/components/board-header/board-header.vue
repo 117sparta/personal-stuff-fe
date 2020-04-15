@@ -1,7 +1,8 @@
 <template>
   <div class="board-header-container">
-    <el-input v-if="showEditInput" style="width: 200px;" v-model="editingTitle" ref="title-input" @keydown.native.enter="handleUpdateBoard" @blur="handleCancelEdit"></el-input>
+    <el-input v-if="showEditInput" style="width: 300px;" v-model="editingTitle" ref="title-input" @keydown.native.enter="handleUpdateBoard" @blur="handleCancelEdit"></el-input>
     <div v-else class="board-title">{{item.title}}<span class="el-icon-edit title-edit" @click="handleShowEditInput"></span></div>
+    <div class="menu-btn"><span class="el-icon-menu" style="margin-right: 5px;"></span>菜单</div>
   </div>
 </template>
 
@@ -52,7 +53,7 @@ export default class BoardHeader extends Vue {
 .board-header {
   &-container {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     height: 6%;
     padding: 20px;
@@ -68,6 +69,18 @@ export default class BoardHeader extends Vue {
       .title-edit:hover {
         background-color: rgba(138, 138, 138, 0.5);
       }
+    }
+    .menu-btn {
+      font-size: 0.9em;
+      padding: 4px 18px;
+      border-radius: 5px;
+      color: white;
+      background-color:rgba(138, 138, 138, 0.5);
+      transition: background-color .3s linear;
+      cursor: pointer;
+    }
+    .menu-btn:hover {
+      background-color:rgba(138, 138, 138, 0.8);
     }
   }
 }
