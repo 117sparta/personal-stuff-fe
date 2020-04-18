@@ -99,28 +99,7 @@ export default class PSMenu extends Vue {
   showNewLabelInput: boolean = false; // 是否显示新建标签的输入框
   defaultLabelColor: string = '#ff0000'; // 默认的标签颜色
   colorSelectedIndex: number = -1;
-  labelList: any[] = [
-    {
-      id: 1,
-      content: '重要',
-      color: 'red'
-    },
-    {
-      id: 2,
-      content: '🌟🌟🌟',
-      color: 'red'
-    },
-    {
-      id: 3,
-      content: '🌟🌟',
-      color: 'red'
-    },
-    {
-      id: 4,
-      content: '',
-      color: 'blue'
-    }
-  ];
+  labelList: any[] = [];
 
   labelForm: any = {};
 
