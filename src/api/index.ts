@@ -4,6 +4,7 @@ import card from './card';
 import stuffList from './stuff-list';
 import config from './config';
 import user from './user';
+import label from './label';
 
 export default {
   board,
@@ -11,5 +12,6 @@ export default {
   card,
   stuffList,
   config,
-  user
+  user,
+  label
 };

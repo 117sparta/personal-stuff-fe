@@ -45,9 +45,22 @@ function deleteCard (cardId: number) {
   );
 }
 
+function attachLabel (cardId: number, labelId: number, isDelete: boolean) {
+  return requestObj.post(
+    '/card/attachLabel',
+    {
+      cardId,
+      labelId,
+      isDelete,
+      createdAt: generateTimeStamp()
+    }
+  );
+}
+
 export default {
   createCard,
   updateCard,
   queryCardInfo,
-  deleteCard
+  deleteCard,
+  attachLabel
 };

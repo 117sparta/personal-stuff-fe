@@ -1,6 +1,6 @@
 <template>
-  <div style="height: 100%; background-color: #d6f5f5;">
-    <board-header :item="board" @refreshBoard="handleGetBoardInfo"></board-header>
+  <div style="height: 100%; background-color: #ffffe5;position: relative;">
+    <board-header :item="board" @refreshBoard="handleGetBoardInfo" @show-menu="handleShowMenu"></board-header>
     <main style="height: 91%;overflow: auto; white-space: nowrap; padding-right: 20px;">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
         <draggable
@@ -25,7 +25,8 @@
         </div>
       </div>
     </main>
-    <card-modal v-if="showCardModal" ref="card-modal" @refreshSingleList="handleGetList"></card-modal>
+    <card-modal v-if="showCardModal" ref="card-modal" @refreshSingleList="handleGetList" :board-id="board.id"></card-modal>
+    <ps-menu v-show="showMenu" @close-menu="handleCloseMenu" :board-id="board.id"></ps-menu>
   </div>
 </template>
 
@@ -39,14 +40,15 @@ import lib from '@/lib';
 import eventBus from './eventBus.js';
 import CardModal from './components/card-modal';
 // import { Board, BoardResponse } from '@/declare/board';
-// import { List, ListResponse } from '@/declare/list';
+import PsMenu from './components/menu';
 
 @Component({
   components: {
     BoardHeader,
     BoardList,
     draggable,
-    CardModal
+    CardModal,
+    PsMenu
   }
 })
 export default class PSBoard extends Vue {
@@ -62,6 +64,7 @@ export default class PSBoard extends Vue {
 
   lists: List[] = [];
   showCardModal: boolean = false;
+  showMenu: boolean = false;
 
   @Watch('$route', {
     immediate: true
@@ -145,6 +148,14 @@ export default class PSBoard extends Vue {
     api.list.updateListOrder(this.lists).catch(err => {
       console.log(err);
     });
+  }
+
+  handleShowMenu () {
+    this.showMenu = true;
+  }
+
+  handleCloseMenu () {
+    this.showMenu = false;
   }
 }
 </script>

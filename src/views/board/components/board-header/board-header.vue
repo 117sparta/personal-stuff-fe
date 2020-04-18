@@ -2,7 +2,7 @@
   <div class="board-header-container">
     <el-input v-if="showEditInput" style="width: 300px;" v-model="editingTitle" ref="title-input" @keydown.native.enter="handleUpdateBoard" @blur="handleCancelEdit"></el-input>
     <div v-else class="board-title">{{item.title}}<span class="el-icon-edit title-edit" @click="handleShowEditInput"></span></div>
-    <div class="menu-btn"><span class="el-icon-menu" style="margin-right: 5px;"></span>菜单</div>
+    <div class="menu-btn" @click="handleShowMenu"><span class="el-icon-menu" style="margin-right: 5px;"></span>菜单</div>
   </div>
 </template>
 
@@ -45,6 +45,10 @@ export default class BoardHeader extends Vue {
   handleCancelEdit () {
     this.editingTitle = '';
     this.showEditInput = false;
+  }
+
+  handleShowMenu () {
+    this.$emit('show-menu');
   }
 }
 </script>

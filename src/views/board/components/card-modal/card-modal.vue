@@ -6,10 +6,18 @@
     class="card-dialog"
     :close-on-click-modal="false"
     >
-    <header slot="title" class="card-title-container">
-      <span class="el-icon-tickets block-align-top" style="font-size: 2em; margin-right: 10px;"></span>
-      <el-input v-if="showTitleInput" type="textarea" size="medium" v-model="card.title" style="display: inline-block;vertical-align: top; width: 78%; font-size: 1.4em;font-weight: bold;" @blur="handleSaveTitle" @keydown.native.enter="handleSaveTitle"></el-input>
-      <span v-else class="block-align-top card-title" @click="handleEditTitle">{{(card && card.title) || ''}}<span class="el-icon-edit" style="margin-left: 12px;"></span></span>
+    <header slot="title">
+      <div class="card-title-container">
+        <span class="el-icon-tickets block-align-top" style="font-size: 2em; margin-right: 10px;"></span>
+        <el-input v-if="showTitleInput" type="textarea" size="medium" v-model="card.title" style="display: inline-block;vertical-align: top; width: 78%; font-size: 1.4em;font-weight: bold;" @blur="handleSaveTitle" @keydown.native.enter="handleSaveTitle"></el-input>
+        <span v-else class="block-align-top card-title" @click="handleEditTitle">{{(card && card.title) || ''}}<span class="el-icon-edit" style="margin-left: 12px;"></span></span>
+      </div>
+      <section style="padding-left: 10px; margin-top: 10px;">
+        <article
+          v-for="item in card.labelList" :key="item.id"
+          :class="`${item.content ? 'header-label-item' : 'header-empty-label-item'}`"
+          :style="{ backgroundColor: item.color }">{{item.content}}</article>
+      </section>
     </header>
     <section class="dialog-container">
       <article class="dialog-left">
@@ -61,20 +69,43 @@
             <span class="el-icon-document-checked aside-item-icon"></span>清单
           </div>
         </el-popover>
-        <div class="aside-item"><span class="el-icon-price-tag aside-item-icon"></span>标签</div>
+        <el-popover
+          trigger="manual"
+          placement="bottom-start"
+          :visible-arrow="false"
+          :value="showLabelPanel">
+          <header class="attach-label-panel-header"><span>添加标签到卡片</span><el-button size="small" class="attach-label-panel-header-close-btn" @click="handleCloseLabelPanel">✖️</el-button></header>
+          <main class="attach-label-panel-main">
+            <section
+              style="margin: 5px 0;position: relative;"
+              v-for="(item, index) in labelList"
+              :key="item.id"
+              :class="`${item.content ? 'label-item' : 'empty-content-label-item'}`"
+              :style="{ backgroundColor: item.color }"
+              @click="handleAttachLabel(item, index)"
+              >
+              <span>{{item.content}}</span>
+              <span v-show="item.isSelected" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);" class="el-icon-check"></span>
+            </section>
+          </main>
+          <div class="aside-item" slot="reference" @click="handleShowLabelPanel">
+            <span class="el-icon-price-tag aside-item-icon"></span>标签
+          </div>
+        </el-popover>
       </aside>
     </section>
   </el-dialog>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import eventBus from '../../eventBus.js';
 import mavonEditor from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
 import api from '@/api';
 import StuffListItem from './components/stuff-list-item';
 import draggable from 'vuedraggable';
+import STATUS_CODE from '@/api/config/statusCode';
 
 interface StuffList {
   id?: number;
@@ -91,6 +122,11 @@ interface StuffList {
   }
 })
 export default class CardModal extends Vue {
+  @Prop({
+    type: Number,
+    default: -1
+  }) boardId;
+
   visible: boolean = false;
   card: any = {};
   showEditContainer: boolean = false;
@@ -101,6 +137,9 @@ export default class CardModal extends Vue {
   newStuffList: StuffList = {
     title: ''
   };
+
+  showLabelPanel: boolean = false;
+  labelList: any[] = [];
 
   show (card) {
     this.card = JSON.parse(JSON.stringify(card));
@@ -166,7 +205,7 @@ export default class CardModal extends Vue {
     });
   }
 
-  handleQueryCardInfo () {
+  handleQueryCardInfo (refreshLabel?: boolean) {
     api.card.queryCardInfo(this.card.id).then(({ cardInfo }: any) => {
       if (cardInfo.stuffLists && Array.isArray(cardInfo.stuffLists)) {
         cardInfo.stuffLists.sort((a, b) => {
@@ -174,6 +213,9 @@ export default class CardModal extends Vue {
         });
       }
       this.card = cardInfo;
+      if (refreshLabel) {
+        this.handleQueryLabel();
+      }
     });
   }
 
@@ -212,6 +254,40 @@ export default class CardModal extends Vue {
       this.handleQueryCardInfo();
     }).catch(err => {
       console.log(err);
+    });
+  }
+
+  handleShowLabelPanel () {
+    this.handleQueryLabel();
+    this.showLabelPanel = true;
+  }
+
+  handleCloseLabelPanel () {
+    this.showLabelPanel = false;
+  }
+
+  handleAttachLabel (item) {
+    const isDelete = !!item.isSelected;
+    api.card.attachLabel(this.card.id, item.id, isDelete).then((res: any) => {
+      if (res.statusCode === STATUS_CODE.SUCCESS) {
+        this.handleQueryCardInfo(true);
+      }
+    });
+  }
+
+  handleQueryLabel () {
+    api.label.queryLabel(this.boardId).then((res: any) => {
+      const labelList = res.labelList;
+      this.card.labelList.forEach(linkedLabel => {
+        for (let i = 0; i < labelList.length; i++) {
+          if (linkedLabel.id === labelList[i].id) {
+            labelList[i].isSelected = true;
+          } else {
+            labelList[i].isSelected = false;
+          }
+        }
+      });
+      this.labelList = labelList;
     });
   }
 }
@@ -300,7 +376,7 @@ export default class CardModal extends Vue {
   }
 }
 
-.new-stuff-list-panel {
+.new-stuff-list-panel, .attach-label-panel {
   &-header {
     display: flex;
     justify-content: space-between;
@@ -316,5 +392,49 @@ export default class CardModal extends Vue {
   &-main {
     margin-top: 12px;
   }
+}
+.attach-label-panel {
+  &-main {
+    margin: 16px 0;
+  }
+}
+
+.empty-content-label-item, .label-item {
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bolder;
+  color: white;
+  width: 200px;
+  margin-right: 5px;
+  cursor: pointer;
+  box-shadow: 0 0 4px #eee;
+}
+.label-item {
+  padding: 0.4em;
+}
+.empty-content-label-item {
+  padding: 2em 0.4em 0 0.4em;
+}
+
+.empty-content-label-item:hover, .label-item:hover {
+  border: 2px solid #66ccff;
+}
+.header-label-item, .header-empty-label-item {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 5px 5px 0;
+  border-radius: 4px;
+  font-size: 0.4em;
+  font-weight: bolder;
+  color: white;
+  width: 160px;
+  margin-right: 5px;
+  box-shadow: 0 0 4px #eee;
+}
+.header-label-item {
+  padding: 5px;
+}
+.header-empty-label-item {
+  padding: 4em 5px 0 5px;
 }
 </style>
