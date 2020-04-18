@@ -257,6 +257,8 @@ export default class PSMenu extends Vue {
 
 .popover-main {
   padding: 10px 0;
+  width: 400px;
+  white-space: pre-wrap;
   .color-block {
     border-radius: 4px;
     display: inline-block;

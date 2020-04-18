@@ -85,7 +85,7 @@
               @click="handleAttachLabel(item, index)"
               >
               <span>{{item.content}}</span>
-              <span v-show="item.isSelected" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);" class="el-icon-check"></span>
+              <span v-show="item.isSelected" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);" class="el-icon-success"></span>
             </section>
           </main>
           <div class="aside-item" slot="reference" @click="handleShowLabelPanel">
@@ -282,8 +282,7 @@ export default class CardModal extends Vue {
         for (let i = 0; i < labelList.length; i++) {
           if (linkedLabel.id === labelList[i].id) {
             labelList[i].isSelected = true;
-          } else {
-            labelList[i].isSelected = false;
+            return;
           }
         }
       });
