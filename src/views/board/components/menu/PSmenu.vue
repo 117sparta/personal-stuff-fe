@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { presetColors } from './const';
 import { Notification } from 'element-ui';
 import api from '@/api';
@@ -118,6 +118,11 @@ export default class PSMenu extends Vue {
       default:
         return '菜单';
     }
+  }
+
+  @Watch('boardId')
+  onRouteChanged () {
+    this.handleQueryLabel();
   }
 
   handleCloseMenu () {

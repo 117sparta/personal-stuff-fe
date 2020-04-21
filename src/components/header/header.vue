@@ -20,7 +20,38 @@
         <el-button icon="el-icon-info" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
         <el-button icon="el-icon-bell" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
         <el-popover trigger="manual" :value="popoverIsVisible">
-          <el-button type="danger" size="small" @click="handleLogOut">退出登录</el-button>
+          <section class="user-info-container">
+            <header class="user-info-title">用户信息<span class="el-icon-close user-info-close-btn" @click="closeUserInfoPanel"></span></header>
+            <article class="user-info-item">
+              <el-input
+                ref="nickname-input"
+                v-if="showNicknameEdit"
+                v-model="editingNickname"
+                placeholder="请输入用户昵称, 回车确定"
+                @keydown.native.enter="handleConfirmEditNickname"
+                @blur="handleCancelEditNickname"
+                size="mini"
+                maxlength="31"
+                show-word-limit>
+                </el-input>
+              <div v-else>
+                <span class="user-info-item-label">昵称：</span> {{userInfo.nickname}}
+                <span class="el-icon-edit edit-icon" @click="handleEditingNickname"></span>
+              </div>
+            </article>
+            <article class="user-info-item">
+              <span class="user-info-item-label">用户Id：</span> {{userInfo.userId}}
+            </article>
+            <article class="user-info-item">
+              <span class="user-info-item-label">帐号：</span> {{userInfo.account}}
+            </article>
+            <article class="user-info-item">
+              <span class="user-info-item-label">注册时间：</span> {{lib.dateToString(userInfo.createdAt)}}
+            </article>
+            <article class="user-info-button-group">
+              <el-button type="danger" size="small" @click="handleLogOut">退出登录</el-button>
+            </article>
+          </section>
           <el-avatar slot="reference" style="margin-left: 10px" @click.native="handleShowPopover" :size="40" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
         </el-popover>
       </div>
@@ -31,15 +62,23 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import api from '@/api';
+import lib from '@/lib/index';
 
 @Component({})
 export default class Header extends Vue {
   hehe = '';
+  lib: any = lib;
+  editingNickname: string = '';
+  showNicknameEdit: boolean = false;
 
   popoverIsVisible: boolean = false;
 
   get boardList () {
     return this.$store.getters['board/boardList'];
+  }
+
+  get userInfo () {
+    return this.$store.getters['user/userInfo'];
   }
 
   mounted () {
@@ -69,6 +108,37 @@ export default class Header extends Vue {
 
   handleShowPopover () {
     this.popoverIsVisible = true;
+  }
+
+  handleEditingNickname () {
+    this.editingNickname = this.userInfo.nickname;
+    this.showNicknameEdit = true;
+    this.$nextTick(() => {
+      const input:any = this.$refs['nickname-input'];
+      if (input) {
+        input.focus();
+      }
+    });
+  }
+
+  handleConfirmEditNickname () {
+    api.user.updateUser(this.editingNickname).then((res: any) => {
+      if (res.userInfo) {
+        res.userInfo.createdAt = lib.dateToString(res.userInfo.createdAt);
+        this.$store.dispatch('user/setUserInfo', res.userInfo);
+        this.showNicknameEdit = false;
+        this.editingNickname = '';
+      }
+    });
+  }
+
+  handleCancelEditNickname () {
+    this.editingNickname = '';
+    this.showNicknameEdit = false;
+  }
+
+  closeUserInfoPanel () {
+    this.popoverIsVisible = false;
   }
 }
 </script>
@@ -101,6 +171,46 @@ export default class Header extends Vue {
         justify-content: flex-end;
       }
     }
+  }
+}
+.user-info-container {
+  .user-info-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 4px 4px 10px 4px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    position: relative;
+    .user-info-close-btn {
+      position: absolute;
+      top: calc(4px + 0.8em);
+      right: 5px;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  }
+  .user-info-item {
+    padding: 4px;
+    .edit-icon {
+      padding: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .edit-icon:hover {
+      background-color: #eee;
+    }
+    &-label {
+      font-weight: bold;
+      font-size: 0.9em;
+      display: inline-block;
+      width: 80px;
+      text-align: right;
+    }
+  }
+  .user-info-button-group {
+    margin-top: 20px;
+    text-align: center;
   }
 }
 </style>

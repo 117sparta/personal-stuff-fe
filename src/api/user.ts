@@ -51,10 +51,21 @@ function queryUserInfo () {
   );
 }
 
+function updateUser (nickname: string, password?: string) {
+  return requestObj.post(
+    '/user/updateUser',
+    {
+      nickname,
+      password
+    }
+  );
+}
+
 export default {
   login,
   register,
   verifyMailCode,
   queryUserInfo,
-  sendCode
+  sendCode,
+  updateUser
 };

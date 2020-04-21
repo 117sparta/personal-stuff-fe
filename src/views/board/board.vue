@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%; background-color: #ffffe5;position: relative;">
     <board-header :item="board" @refreshBoard="handleGetBoardInfo" @show-menu="handleShowMenu"></board-header>
-    <main style="height: 91%;overflow: auto; white-space: nowrap; padding-right: 20px;">
+    <main :style="`height: 91%;overflow: auto; white-space: nowrap;${showMenu ? 'padding-right: 420px;' : 'padding-right: 20px;'}`">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
         <draggable
           tag="div"
