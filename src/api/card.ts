@@ -57,10 +57,20 @@ function attachLabel (cardId: number, labelId: number, isDelete: boolean) {
   );
 }
 
+function searchCardGlobal (keyword: string) {
+  return requestObj.post(
+    '/card/searchCardGlobal',
+    {
+      keyword
+    }
+  );
+}
+
 export default {
   createCard,
   updateCard,
   queryCardInfo,
   deleteCard,
-  attachLabel
+  attachLabel,
+  searchCardGlobal
 };

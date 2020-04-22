@@ -92,6 +92,30 @@
             <span class="el-icon-price-tag aside-item-icon"></span>标签
           </div>
         </el-popover>
+        <el-popover
+          trigger="manual"
+          placement="bottom-start"
+          :visible-arrow="false"
+          :value="showTimeSelectPanel">
+          <header class="attach-label-panel-header"><span>设置过期时间</span><el-button size="small" class="attach-label-panel-header-close-btn" @click="handleCloseTimeSelectPanel">✖️</el-button></header>
+          <main class="attach-label-panel-main">
+            <el-date-picker
+              type="datetime"
+              v-model="editingDateTime"
+              size="small"
+              @change="handleDeadlineChanged"
+              placeholder="请选择过期时间">
+            </el-date-picker>
+          </main>
+          <footer style="margin-top: 10px;padding: 10px 0; display: flex; justify-content: space-between;">
+            <el-button size="small" type="success" @click="handleUpdateDeadline(false)">确定</el-button>
+            <el-button size="small" type="danger" @click="handleUpdateDeadline(true)">移除</el-button>
+          </footer>
+          <div :class="{'deadline': card.deadline, 'aside-item': !card.deadline }" slot="reference" @click="handleShowTimeSelectPanel">
+            <div v-if="card.deadline">{{deadline}}</div>
+            <div v-else><span class="el-icon-time aside-item-icon"></span>到期时间</div>
+          </div>
+        </el-popover>
       </aside>
     </section>
   </el-dialog>
@@ -106,6 +130,8 @@ import api from '@/api';
 import StuffListItem from './components/stuff-list-item';
 import draggable from 'vuedraggable';
 import STATUS_CODE from '@/api/config/statusCode';
+import { Notification } from 'element-ui';
+import lib from '@/lib/index';
 
 interface StuffList {
   id?: number;
@@ -138,8 +164,15 @@ export default class CardModal extends Vue {
     title: ''
   };
 
+  editingDateTime: Date = null;
+
   showLabelPanel: boolean = false;
   labelList: any[] = [];
+  showTimeSelectPanel: boolean = false;
+
+  get deadline () {
+    return lib.dateToString(this.card.deadline);
+  }
 
   show (card) {
     this.card = JSON.parse(JSON.stringify(card));
@@ -289,6 +322,41 @@ export default class CardModal extends Vue {
       this.labelList = labelList;
     });
   }
+
+  handleShowTimeSelectPanel () {
+    this.editingDateTime = this.card.deadline;
+    this.showTimeSelectPanel = true;
+  }
+
+  handleCloseTimeSelectPanel () {
+    this.showTimeSelectPanel = false;
+  }
+
+  handleDeadlineChanged (nval) {
+    if (nval && nval.valueOf() <= Date.now() + 30 * 60 * 1000) {
+      Notification.warning({
+        title: '不能选择之前的时间',
+        message: '至少距离现在30分钟'
+      });
+      this.editingDateTime = null;
+    } else {
+      this.editingDateTime = nval;
+    }
+  }
+
+  handleUpdateDeadline (isRemove) {
+    if (isRemove) {
+      this.card.deadline = null;
+    } else {
+      this.card.deadline = lib.dateToString(this.editingDateTime.valueOf());
+    }
+    api.card.updateCard([this.card]).then(() => {
+      this.showTimeSelectPanel = false;
+      this.editingDateTime = null;
+      this.$emit('refreshSingleList', this.card.listId);
+      this.handleQueryCardInfo();
+    });
+  }
 }
 </script>
 
@@ -371,6 +439,14 @@ export default class CardModal extends Vue {
     }
     .aside-item:hover {
       background-color: rgba(230, 230, 230, 0.6);
+    }
+    .deadline {
+      padding: 5px 5px 5px 10px;
+      background-color: rgb(240, 38, 38);
+      margin-bottom: 5px;
+      color: white;
+      border-radius: 2px;
+      cursor: pointer;
     }
   }
 }

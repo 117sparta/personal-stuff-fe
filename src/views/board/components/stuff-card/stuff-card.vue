@@ -23,7 +23,7 @@
     </article>
     <article class="status-bar">
       <span v-if="card.description" class="el-icon-chat-line-square status" :key="1"></span>
-      <span v-if="card.deadline" :key="2"></span>
+      <span v-if="card.deadline" :key="2" class="deadline-status">{{deadline}}</span>
     </article>
   </section>
 </template>
@@ -33,6 +33,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
 import api from '@/api';
 import { Notification } from 'element-ui';
 import eventBus from '../../eventBus.js';
+import lib from '@/lib/index';
 
 @Component({})
 export default class StuffCard extends Vue {
@@ -53,6 +54,10 @@ export default class StuffCard extends Vue {
 
   showTitleInput: boolean = false;
   editingTitle = '';
+
+  get deadline () {
+    return lib.dateToString(this.card.deadline);
+  }
 
   mounted () {
     if (this.card.status) {
@@ -125,6 +130,16 @@ export default class StuffCard extends Vue {
     justify-content: flex-start;
     .status {
       margin: 3px 6px;
+    }
+    .deadline-status {
+      background-color: red;
+      color: white;
+      font-size: 0.4em;
+      line-height: 1.5;
+      padding: 4px;
+      border-radius: 4px;
+      text-align: center;
+      margin-left: 5px;
     }
   }
 }
