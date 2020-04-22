@@ -71,6 +71,16 @@ export default class PSBoard extends Vue {
   })
   onRouteChanged () {
     this.boardId = this.$route.params.boardId;
+    const cardId = Number(this.$route.query.cardId);
+    if (cardId) {
+      this.showCardModal = true;
+      this.$nextTick(() => {
+        const cardModal: any = this.$refs['card-modal'];
+        if (cardModal) {
+          cardModal.show({ id: cardId });
+        }
+      });
+    }
     this.handleGetBoardInfo();
   }
 

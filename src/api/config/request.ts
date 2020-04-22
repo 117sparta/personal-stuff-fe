@@ -144,17 +144,34 @@ instance.interceptors.response.use(response => {
   } catch (e) {
     isJson = false;
   }
-  if (data.statusCode === STATUS_CODE.UNAUTHORIZED) {
-    router.push({ path: '/login' });
-  }
   if (isJson) {
     if (process.env.NODE_ENV === 'development') console.log(JSON.parse(data));
-    return Promise.resolve(JSON.parse(data));
+    const responseData = JSON.parse(data);
+    if (responseData.statusCode === STATUS_CODE.UNAUTHORIZED) {
+      store.dispatch('user/setIsAuth', false);
+      store.dispatch('user/setUserInfo', {});
+      localStorage.removeItem('token');
+      router.push({ path: '/login' });
+    }
+    return Promise.resolve(responseData);
   } else {
     if (process.env.NODE_ENV === 'development') console.log(data);
+    if (data.statusCode === STATUS_CODE.UNAUTHORIZED) {
+      store.dispatch('user/setIsAuth', false);
+      store.dispatch('user/setUserInfo', {});
+      localStorage.removeItem('token');
+      console.log(router);
+      router.push({ path: '/login' });
+      return;
+    }
     return Promise.resolve(data);
   }
 }, error => {
+  if (error.status === 401) {
+    Notification.error('你需要重新登录才能使用');
+    router.push({ path: '/login' });
+    return;
+  }
   return Promise.reject(error);
 });
 

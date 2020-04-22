@@ -13,7 +13,44 @@
             <el-dropdown-item v-for="item in boardList" icon="el-icon-date" :key="item.id" @click.native.stop="handleGoToBoard(item)">{{item.title}}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-input suffix-icon="el-icon-search" style="width: 40%; margin-left: 10px; color: blue;" size="small" v-model="hehe"></el-input>
+        <el-popover
+          placement="bottom-start"
+          trigger="manual"
+          :visible-arrow="false"
+          :value="showSearchResult"
+          popper-class="popper-class"
+          style="width: 40%"
+          >
+          <section v-for="item in cardSearched" :key="item.id" class="search-result-item" @click="handleJumpToCard(item)">
+            <article class="search-result-board">
+              <section class="search-result-title">
+                <header style="border-bottom: 1px solid #ccc;">所在看板</header>
+                <span class="search-result-title-text">{{item.board.title}}</span>
+              </section>
+              <section class="search-result-list">
+                <section class="search-result-title">
+                  <header style="border-bottom: 1px solid #ccc;">所在列表</header>
+                  <span class="search-result-title-text">{{item.list.title}}</span>
+                </section>
+                <article class="search-result-card">
+                  <section class="search-result-title">
+                    <header style="border-bottom: 1px solid #ccc;">卡片</header>
+                    <span class="search-result-title-text">{{item.title}}</span>
+                  </section>
+                </article>
+              </section>
+            </article>
+          </section>
+          <el-input
+            slot="reference"
+            suffix-icon="el-icon-search"
+            style="margin-left: 10px; color: blue;"
+            size="small"
+            v-model="keyword"
+            @focus="showSearchResult=true"
+            @blur="showSearchResult=false"
+            @keydown.native.enter="handleSearchCard"></el-input>
+        </el-popover>
       </div>
       <div class="right" style="display: flex;align-items: center;">
         <el-button icon="el-icon-plus" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
@@ -66,12 +103,15 @@ import lib from '@/lib/index';
 
 @Component({})
 export default class Header extends Vue {
-  hehe = '';
+  keyword: string = '';
   lib: any = lib;
   editingNickname: string = '';
   showNicknameEdit: boolean = false;
 
   popoverIsVisible: boolean = false;
+  showSearchResult: boolean = false;
+
+  cardSearched: any[] = [];
 
   get boardList () {
     return this.$store.getters['board/boardList'];
@@ -140,8 +180,26 @@ export default class Header extends Vue {
   closeUserInfoPanel () {
     this.popoverIsVisible = false;
   }
+
+  handleSearchCard () {
+    api.card.searchCardGlobal(this.keyword).then((res: any) => {
+      this.cardSearched = res.cardInfo;
+    }).catch(err => {
+      console.log(err);
+    });
+  }
+
+  handleJumpToCard (item) {
+    this.$router.push({ path: `/board/${item.board.boardId}?cardId=${item.id}` });
+  }
 }
 </script>
+
+<style lang="less">
+body .popper-class {
+  min-width: 20%;
+}
+</style>
 
 <style lang="less" scoped>
 .header {
@@ -211,6 +269,58 @@ export default class Header extends Vue {
   .user-info-button-group {
     margin-top: 20px;
     text-align: center;
+  }
+}
+.search-result {
+  &-item {
+    margin-bottom: 5px;
+  }
+  &-item:hover {
+    padding: 2px;
+    background-color: #eee;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  &-board, &-list, &-card {
+    border-radius: 5px;
+    display: flex;
+    justify-content: flex-start;
+    padding: 5px;
+  }
+  &-list, &-card {
+    margin-left: 10px;
+  }
+  &-title {
+    display: inline-block;
+    color: #444;
+    flex-grow: 1;
+    &-text {
+      padding: 0 10px 0 5px;
+    }
+  }
+  &-title > header {
+    padding: 4px;
+    font-size: 0.5em;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+  }
+  &-board {
+    background-color: #ffffe8;
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-start;
+  }
+  &-list {
+    flex-grow: 1;
+    background-color: #eee;
+    display: flex;
+    justify-content: flex-start;
+  }
+  &-card {
+    background-color: white;
+    flex-grow: 2;
+    display: flex;
+    justify-content: flex-start;
   }
 }
 </style>
