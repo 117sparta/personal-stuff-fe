@@ -89,7 +89,6 @@ instance.interceptors.request.use(async (config) => {
         data: lib.aesEncrypt(config.data),
         key: encrypt.encrypt(store.getters['key/rsaKey'])
       });
-      console.log(config.data);
     }
     return config;
   } else if (/getRsaKey/i.test(config.url)) { // 如果是为了传输AES加密的key，那么用RSA算法
@@ -125,7 +124,6 @@ instance.interceptors.request.use(async (config) => {
         data: lib.aesEncrypt(config.data),
         key: encrypt.encrypt(store.getters['key/rsaKey'])
       });
-      console.log(config.data);
     }
     return config;
   }
@@ -177,7 +175,6 @@ instance.interceptors.response.use(response => {
       store.dispatch('user/setIsAuth', false);
       store.dispatch('user/setUserInfo', {});
       localStorage.removeItem('token');
-      console.log(router);
       router.push({ path: '/login' });
       return;
     }

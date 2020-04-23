@@ -51,9 +51,6 @@ export default class App extends Vue {
         console.log(err);
       });
     });
-    api.card.searchCardInBoard('你好', 8).then(res => {
-      console.log(res);
-    });
   }
 }
 </script>
