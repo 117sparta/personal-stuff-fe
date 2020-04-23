@@ -139,16 +139,20 @@ instance.interceptors.response.use(response => {
   const publicKey = store.getters['key/publicKey'];
   if (publicKey) encrypt.setPublicKey(publicKey);
   if (process.env.NODE_ENV === 'development') console.log(`%c[${config.method}][RS] ${config.url.substring(config.url.lastIndexOf('/') + 1)}`, 'color: green; font-size: 14px; font-weight: bold;');
-  if (response.data.data.statusCode === STATUS_CODE.UNAUTHORIZED) { // 后台401错误用明文进行返回
-    store.dispatch('user/setIsAuth', false);
-    store.dispatch('user/setUserInfo', {});
-    localStorage.removeItem('token');
-    router.push({ path: '/login' });
-    return;
-  }
   let data = null;
   if (response.config.url !== '/getPublicKey' && response.config.url !== '/getRsaKey') {
-    data = lib.aesDecrypt(response.data.data);
+    let isPlain = false;
+    try {
+      lib.aesDecrypt(response.data.data);
+    } catch (err) {
+      console.log(err);
+      isPlain = true;
+    }
+    if (isPlain) {
+      data = response.data.data;
+    } else {
+      data = lib.aesDecrypt(response.data.data);
+    }
   } else { // getPublicKey和getRsaKey的原模原样返回
     data = response.data.data;
   }
@@ -181,10 +185,10 @@ instance.interceptors.response.use(response => {
     return Promise.resolve(data);
   }
 }, error => {
-  if (error.status === 401) {
+  if (/401/.test(error.message)) {
     Notification.error('你需要重新登录才能使用');
     router.push({ path: '/login' });
-    return;
+    return Promise.reject(new Error('unauthorized'));
   }
   return Promise.reject(error);
 });

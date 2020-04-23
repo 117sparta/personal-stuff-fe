@@ -9,7 +9,7 @@
     <header slot="title">
       <div class="card-title-container">
         <span class="el-icon-tickets block-align-top" style="font-size: 2em; margin-right: 10px;"></span>
-        <el-input v-if="showTitleInput" type="textarea" size="medium" v-model="card.title" style="display: inline-block;vertical-align: top; width: 78%; font-size: 1.4em;font-weight: bold;" @blur="handleSaveTitle" @keydown.native.enter="handleSaveTitle"></el-input>
+        <el-input v-if="showTitleInput" ref="card-title-input" type="textarea" size="medium" v-model="card.title" style="display: inline-block;vertical-align: top; width: 78%; font-size: 1.4em;font-weight: bold;" @blur="handleSaveTitle" @keydown.native.enter="handleSaveTitle"></el-input>
         <span v-else class="block-align-top card-title" @click="handleEditTitle">{{(card && card.title) || ''}}<span class="el-icon-edit" style="margin-left: 12px;"></span></span>
       </div>
       <section style="padding-left: 10px; margin-top: 10px;">
@@ -215,6 +215,12 @@ export default class CardModal extends Vue {
   handleEditTitle () {
     this.originContent = this.card.title;
     this.showTitleInput = true;
+    this.$nextTick(() => {
+      const cardTitleInput: any = this.$refs['card-title-input'];
+      if (cardTitleInput) {
+        cardTitleInput.focus();
+      }
+    });
   }
 
   handleSaveTitle () {
@@ -234,6 +240,7 @@ export default class CardModal extends Vue {
       this.$emit('refreshSingleList', this.card.listId);
       this.handleQueryCardInfo();
     }).catch(err => {
+      Notification.error('保存卡片信息失败');
       console.log(err);
     });
   }
@@ -272,6 +279,7 @@ export default class CardModal extends Vue {
           this.showNewStuffListPanel = false;
           this.handleQueryCardInfo();
         }).catch(err => {
+          Notification.error('创建清单失败');
           console.log(err);
         });
       }
@@ -286,6 +294,7 @@ export default class CardModal extends Vue {
     api.stuffList.updateStuffList(stuffLists).then(() => {
       this.handleQueryCardInfo();
     }).catch(err => {
+      Notification.error('更新清单顺序失败');
       console.log(err);
     });
   }

@@ -80,10 +80,11 @@ export default class StuffCard extends Vue {
       this.showTitleInput = false;
       this.$parent.$emit('on-submit');
       Notification.success({
-        title: '新建成功',
+        title: '新建卡片成功',
         message: ''
       });
     }).catch(err => {
+      Notification.error('新建卡片失败');
       console.log(err);
     });
   }

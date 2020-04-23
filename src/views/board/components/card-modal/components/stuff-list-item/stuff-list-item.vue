@@ -49,6 +49,7 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import draggable from 'vuedraggable';
 import api from '@/api';
+import { Notification } from 'element-ui';
 
 @Component({
   components: {
@@ -81,6 +82,7 @@ export default class StuffListItem extends Vue {
     api.stuffList.updateStuffListItems([item]).then(() => {
       this.$emit('refreshCard');
     }).catch(err => {
+      Notification.error('更新清单项失败');
       console.log(err);
     });
   }
@@ -100,6 +102,7 @@ export default class StuffListItem extends Vue {
       this.newStuffListItemText = '';
       this.$emit('refreshCard');
     }).catch(err => {
+      Notification.error('创建清单项失败');
       console.log(err);
     });
   }
@@ -123,6 +126,7 @@ export default class StuffListItem extends Vue {
     api.stuffList.deleteStuffListItem(item.id).then(() => {
       this.$emit('refreshCard');
     }).catch(err => {
+      Notification.error('删除清单项失败');
       console.log(err);
     });
   }
@@ -131,6 +135,7 @@ export default class StuffListItem extends Vue {
     api.stuffList.deleteStuffList(this.list.id).then(() => {
       this.$emit('refreshCard');
     }).catch(err => {
+      Notification.error('删除清单失败');
       console.log(err);
     });
   }
@@ -152,6 +157,7 @@ export default class StuffListItem extends Vue {
       this.showTitleInput = false;
       this.originalContent = '';
     }).catch(err => {
+      Notification.error('更新清单标题失败');
       console.log(err);
     });
   }

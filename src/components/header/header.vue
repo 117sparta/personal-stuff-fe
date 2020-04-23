@@ -53,9 +53,6 @@
         </el-popover>
       </div>
       <div class="right" style="display: flex;align-items: center;">
-        <el-button icon="el-icon-plus" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
-        <el-button icon="el-icon-info" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
-        <el-button icon="el-icon-bell" size="small" style="padding: 7px; font-size: 1.1em;" type="default"></el-button>
         <el-popover trigger="manual" :value="popoverIsVisible">
           <section class="user-info-container">
             <header class="user-info-title">用户信息<span class="el-icon-close user-info-close-btn" @click="closeUserInfoPanel"></span></header>
@@ -100,6 +97,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 import api from '@/api';
 import lib from '@/lib/index';
+import { Notification } from 'element-ui';
 
 @Component({})
 export default class Header extends Vue {
@@ -186,6 +184,7 @@ export default class Header extends Vue {
       this.cardSearched = res.cardInfo;
     }).catch(err => {
       console.log(err);
+      Notification.error('搜索卡片出错');
     });
   }
 

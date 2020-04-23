@@ -10,6 +10,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import MainPage from '@/views/main-page';
 import api from '@/api';
 import lib from '@/lib';
+import { Notification } from 'element-ui';
 
 @Component({
   components: {
@@ -49,6 +50,7 @@ export default class App extends Vue {
         }
       }).catch(err => {
         console.log(err);
+        Notification.error('与服务器通信发生错误');
       });
     });
   }

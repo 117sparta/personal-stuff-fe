@@ -1,5 +1,6 @@
 import requestObj from '@/api/config/request';
 import generateTimeStamp from './lib/timestamp';
+import lib from '@/lib';
 
 function createStuffList (stuffList, cardId) {
   return requestObj.post(
@@ -16,6 +17,7 @@ function createStuffList (stuffList, cardId) {
 function updateStuffList (stuffLists) {
   stuffLists.forEach(item => {
     item.updatedAt = generateTimeStamp();
+    item.createdAt = lib.dateToString(item.createdAt);
   });
   const data = JSON.stringify(stuffLists);
   return requestObj.post(
@@ -49,6 +51,7 @@ function createStuffListItem (stuffListItem, stuffListId) {
 function updateStuffListItems (stuffListItems) {
   stuffListItems.forEach(item => {
     item.updatedAt = generateTimeStamp();
+    item.createdAt = lib.dateToString(item.createdAt);
   });
   const data = JSON.stringify(stuffListItems);
   return requestObj.post(

@@ -205,6 +205,7 @@ export default class Register extends Vue {
             Notification.error('未知错误');
           }
         }).catch(err => {
+          Notification.error('注册出错');
           console.log(err);
         });
       }).catch((err) => {

@@ -148,10 +148,12 @@ export default class BoardList extends Vue {
       item.cardOrder = index + 1;
     });
     api.card.updateCard(this.cardList).catch(err => {
+      Notification.error('更新卡片顺序失败');
       console.log(err);
     });
     if (e.added) {
       api.card.updateCard([e.added.element], this.list.id).catch(err => {
+        Notification.error('移动卡片失败');
         console.log(err);
       });
     }

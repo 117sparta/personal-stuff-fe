@@ -12,6 +12,7 @@ function setAesKey (key) {
 }
 
 function dateToString (timestamp: number) {
+  if (!timestamp) return null;
   const dateObj = new Date(timestamp);
   const year = dateObj.getFullYear();
   const month = dateObj.getMonth() + 1;

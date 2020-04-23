@@ -1,5 +1,6 @@
 import requestObj from './config/request';
 import generateTimeStamp from './lib/timestamp';
+import lib from '@/lib';
 
 function createCard (message) {
   return requestObj.post(
@@ -19,7 +20,9 @@ function updateCard (cardList, listId?) {
       cardList: cardList.map((item: any) => {
         return {
           ...item,
-          updatedAt: generateTimeStamp()
+          updatedAt: generateTimeStamp(),
+          createdAt: lib.dateToString(item.createdAt),
+          deadline: lib.dateToString(item.deadline)
         };
       }),
       listId

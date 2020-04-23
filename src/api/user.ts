@@ -1,5 +1,6 @@
 import requestObj from './config/request';
 import CryptoJS from 'crypto-js';
+import generateTimestamp from './lib/timestamp';
 
 function login ({ account, password }) {
   const pwdStr = CryptoJS.SHA1(password); // 用md5进行密码校验
@@ -21,7 +22,8 @@ function register ({ account, password, nickname }) {
     {
       account,
       pwd,
-      nickname
+      nickname,
+      createdAt: generateTimestamp()
     }
   );
 }

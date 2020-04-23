@@ -44,6 +44,7 @@ import eventBus from './eventBus.js';
 import CardModal from './components/card-modal';
 // import { Board, BoardResponse } from '@/declare/board';
 import PsMenu from './components/menu';
+import { Notification } from 'element-ui';
 
 @Component({
   components: {
@@ -161,6 +162,7 @@ export default class PSBoard extends Vue {
       item.listOrder = index + 1;
     });
     api.list.updateListOrder(this.lists).catch(err => {
+      Notification.error('排序出现错误，请刷新重试');
       console.log(err);
     });
   }

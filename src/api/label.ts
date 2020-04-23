@@ -1,5 +1,6 @@
 import requestObj from './config/request';
 import generateTimestamp from './lib/timestamp';
+import lib from '@/lib';
 
 function createLabel (label, boardId) {
   return requestObj.post(
@@ -21,7 +22,8 @@ function updateLabel (label) {
     {
       label: {
         ...label,
-        updatedAt: generateTimestamp()
+        updatedAt: generateTimestamp(),
+        createdAt: lib.dateToString(label.createdAt)
       }
     }
   );

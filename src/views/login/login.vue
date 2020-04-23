@@ -28,6 +28,8 @@
 import { Vue, Component } from 'vue-property-decorator';
 import Register from './components/register';
 import api from '@/api';
+import STATUS_CODE from '@/api/config/statusCode';
+import { Notification } from 'element-ui';
 
 @Component({
   components: {
@@ -74,14 +76,21 @@ export default class Login extends Vue {
     loginForm.validate().then((valid) => {
       if (valid) {
         api.user.login(this.loginForm).then((res: any) => {
-          this.$store.dispatch('user/setIsAuth', true);
-          this.$store.dispatch('user/setUserInfo', res.userInfo);
-          localStorage.removeItem('token');
-          localStorage.setItem('token', res.token);
-          this.$router.push({ path: '/home' });
+          if (res.statusCode === STATUS_CODE.SUCCESS) {
+            this.$store.dispatch('user/setIsAuth', true);
+            this.$store.dispatch('user/setUserInfo', res.userInfo);
+            localStorage.removeItem('token');
+            localStorage.setItem('token', res.token);
+            this.$router.push({ path: '/home' });
+          } else if (res.statusCode === STATUS_CODE.WRONG_PW_OR_ACCOUNT) {
+            Notification.warning('用户名或者密码错误');
+          } else if (res.statusCode === STATUS_CODE.USER_NOT_EXISTED) {
+            Notification.warning('用户不存在');
+          }
         });
       }
     }).catch(err => {
+      Notification.error('登录出错');
       console.log(err);
     });
   }
