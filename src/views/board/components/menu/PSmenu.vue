@@ -14,7 +14,8 @@
       </div>
     </main>
     <main class="menu-main" v-else-if="status === 'SHOW_SEARCH'">
-      <el-input type="text" @keydown.native.enter="handleSearchCard" placeholder="输入并回车进行搜索"></el-input>
+      <el-input type="text" ref="card-search-input" v-model="searchKeyword" @keydown.native.enter="handleSearchCard" placeholder="输入并回车进行搜索"></el-input>
+      <el-button size="mini" type="warning" style="margin-top: 10px;" @click="handleShowAllList" :disabled="hasGetAllLists">取消搜索</el-button>
     </main>
     <main class="menu-main" v-else-if="status === 'SHOW_LABEL'">
       <el-popover
@@ -93,6 +94,11 @@ export default class PSMenu extends Vue {
     default: 0
   }) boardId;
 
+  @Prop({
+    type: Boolean,
+    default: true
+  }) hasGetAllLists;
+
   status: string = 'SHOW_MENU'; // SHOW_MENU || SHOW_SEARCH || SHOW_LABEL
   isEditingLabel: boolean = false; // 标志是不是已经在编辑标签的状态了
   editingIndex: number = -1; // 正在编辑的标签
@@ -102,6 +108,8 @@ export default class PSMenu extends Vue {
   labelList: any[] = [];
 
   labelForm: any = {};
+
+  searchKeyword: string = '';
 
   get colorsList () {
     return presetColors;
@@ -131,6 +139,12 @@ export default class PSMenu extends Vue {
 
   handleShowSearchCardView () {
     this.status = 'SHOW_SEARCH';
+    this.$nextTick(() => {
+      const cardSearchInput: any = this.$refs['card-search-input'];
+      if (cardSearchInput) {
+        cardSearchInput.focus();
+      }
+    });
   }
 
   handleShowLabelView () {
@@ -139,7 +153,7 @@ export default class PSMenu extends Vue {
   }
 
   handleSearchCard () {
-    console.log('search');
+    this.$emit('searchCard', this.searchKeyword);
   }
 
   handleFallback () {
@@ -209,6 +223,10 @@ export default class PSMenu extends Vue {
     api.label.queryLabel(this.boardId).then((res: any) => {
       this.labelList = res.labelList;
     });
+  }
+
+  handleShowAllList () {
+    this.$emit('showAllList');
   }
 }
 </script>

@@ -66,11 +66,22 @@ function searchCardGlobal (keyword: string) {
   );
 }
 
+function searchCardInBoard (keyword:string, boardId: number) {
+  return requestObj.post(
+    '/card/searchCardInBoard',
+    {
+      keyword,
+      boardId
+    }
+  );
+}
+
 export default {
   createCard,
   updateCard,
   queryCardInfo,
   deleteCard,
   attachLabel,
-  searchCardGlobal
+  searchCardGlobal,
+  searchCardInBoard
 };

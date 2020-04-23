@@ -26,7 +26,10 @@
       </div>
     </main>
     <card-modal v-if="showCardModal" ref="card-modal" @refreshSingleList="handleGetList" :board-id="board.id"></card-modal>
-    <ps-menu v-show="showMenu" @close-menu="handleCloseMenu" :board-id="board.id"></ps-menu>
+    <ps-menu v-show="showMenu" @close-menu="handleCloseMenu" :board-id="board.id"
+      :has-get-all-lists="hasGetAllLists"
+      @searchCard="handleSearchCard($event)"
+      @showAllList="handleGetBoardList"></ps-menu>
   </div>
 </template>
 
@@ -65,6 +68,7 @@ export default class PSBoard extends Vue {
   lists: List[] = [];
   showCardModal: boolean = false;
   showMenu: boolean = false;
+  hasGetAllLists: boolean = false;
 
   @Watch('$route', {
     immediate: true
@@ -128,6 +132,7 @@ export default class PSBoard extends Vue {
       res.lists.sort((a: any, b: any) => {
         return a.listOrder - b.listOrder;
       });
+      this.hasGetAllLists = true;
       this.lists = res.lists;
     });
   }
@@ -166,6 +171,16 @@ export default class PSBoard extends Vue {
 
   handleCloseMenu () {
     this.showMenu = false;
+  }
+
+  handleSearchCard (keyword: string) {
+    api.card.searchCardInBoard(keyword, Number(this.board.id)).then((res: any) => {
+      res.lists.sort((a: any, b: any) => {
+        return a.listOrder - b.listOrder;
+      });
+      this.hasGetAllLists = false;
+      this.lists = res.lists;
+    });
   }
 }
 </script>

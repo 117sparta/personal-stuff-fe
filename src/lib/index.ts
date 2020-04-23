@@ -1,6 +1,7 @@
 import CryptoJS from 'crypto-js';
 
 let aesKey = '';
+const iv = 'yujiyuxusuyiuijh';
 
 function getAesKey () {
   return aesKey;
@@ -58,7 +59,7 @@ function aesEncrypt (word) {
   let encrypted = '';
   if (typeof word === 'string') {
     encrypted = CryptoJS.AES.encrypt(word, aesKey, {
-      iv: aesKey,
+      iv,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7
     });
@@ -66,7 +67,7 @@ function aesEncrypt (word) {
     // 对象格式的转成json字符串
     const data = JSON.stringify(word);
     encrypted = CryptoJS.AES.encrypt(data, aesKey, {
-      iv: aesKey,
+      iv,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7
     });
@@ -78,7 +79,7 @@ function aesDecrypt (word: string, key?: string) {
   const localKey = aesKey || key;
   const srcs = CryptoJS.enc.Base64.parse(word).toString(CryptoJS.enc.Utf8);
   const decrypt = CryptoJS.AES.decrypt(srcs, localKey, {
-    iv: localKey,
+    iv,
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7
   });

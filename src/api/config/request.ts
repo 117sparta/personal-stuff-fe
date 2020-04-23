@@ -85,7 +85,11 @@ instance.interceptors.request.use(async (config) => {
     if (config.method.toLocaleLowerCase() === 'post') {
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
       config.headers.Authorization = getToken();
-      config.data = qs.stringify({ data: lib.aesEncrypt(config.data) });
+      config.data = qs.stringify({
+        data: lib.aesEncrypt(config.data),
+        key: encrypt.encrypt(store.getters['key/rsaKey'])
+      });
+      console.log(config.data);
     }
     return config;
   } else if (/getRsaKey/i.test(config.url)) { // 如果是为了传输AES加密的key，那么用RSA算法
@@ -114,9 +118,14 @@ instance.interceptors.request.use(async (config) => {
     return config;
   } else { // 除去上面情况，用AES加密传输
     if (config.method.toLocaleLowerCase() === 'post') {
+      encrypt.setKey(store.getters['key/publicKey']);
       config.headers['Content-type'] = 'application/x-www-form-urlencoded';
       config.headers.Authorization = getToken();
-      config.data = qs.stringify({ data: lib.aesEncrypt(config.data) });
+      config.data = qs.stringify({
+        data: lib.aesEncrypt(config.data),
+        key: encrypt.encrypt(store.getters['key/rsaKey'])
+      });
+      console.log(config.data);
     }
     return config;
   }
@@ -132,6 +141,13 @@ instance.interceptors.response.use(response => {
   const publicKey = store.getters['key/publicKey'];
   if (publicKey) encrypt.setPublicKey(publicKey);
   if (process.env.NODE_ENV === 'development') console.log(`%c[${config.method}][RS] ${config.url.substring(config.url.lastIndexOf('/') + 1)}`, 'color: green; font-size: 14px; font-weight: bold;');
+  if (response.data.data.statusCode === STATUS_CODE.UNAUTHORIZED) { // 后台401错误用明文进行返回
+    store.dispatch('user/setIsAuth', false);
+    store.dispatch('user/setUserInfo', {});
+    localStorage.removeItem('token');
+    router.push({ path: '/login' });
+    return;
+  }
   let data = null;
   if (response.config.url !== '/getPublicKey' && response.config.url !== '/getRsaKey') {
     data = lib.aesDecrypt(response.data.data);
@@ -152,6 +168,7 @@ instance.interceptors.response.use(response => {
       store.dispatch('user/setUserInfo', {});
       localStorage.removeItem('token');
       router.push({ path: '/login' });
+      return;
     }
     return Promise.resolve(responseData);
   } else {
