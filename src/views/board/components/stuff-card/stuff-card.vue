@@ -13,6 +13,9 @@
       @click.native.stop
     ></el-input>
     <article style="position: relative; white-space: pre-wrap;" v-else>
+      <div style="margin: 5px 0 10px 0;">
+        <span :style="{ backgroundColor: item.color }" :class="`${item.content ? 'label-item' : 'empty-content-label-item'}`" v-for="item in card.labelList" :key="item.id">{{item.content}}</span>
+      </div>
       <span>{{card && card.title}}</span>
       <el-dropdown class="more-list" trigger="hover" placement="bottom-end">
         <span class="el-icon-more el-dropdown-link" @click.stop></span>
@@ -129,6 +132,7 @@ export default class StuffCard extends Vue {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
+    margin-top: 17px;
     .status {
       margin: 3px 6px;
     }
@@ -142,6 +146,23 @@ export default class StuffCard extends Vue {
       text-align: center;
       margin-left: 5px;
     }
+  }
+  .label-item, .empty-content-label-item {
+    width: 30%;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: pre-wrap;
+    border-radius: 5px;
+    font-size: 0.8em;
+    color: white;
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  .label-item {
+    padding: 5px 10px;
+  }
+  .empty-content-label-item {
+    padding: 1.6em;
   }
 }
 

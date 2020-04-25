@@ -152,7 +152,9 @@ export default class BoardList extends Vue {
       console.log(err);
     });
     if (e.added) {
-      api.card.updateCard([e.added.element], this.list.id).catch(err => {
+      api.card.updateCard([e.added.element], this.list.id).then(() => {
+        this.$parent.$emit('refreshSingleList', this.list.id);
+      }).catch(err => {
         Notification.error('移动卡片失败');
         console.log(err);
       });

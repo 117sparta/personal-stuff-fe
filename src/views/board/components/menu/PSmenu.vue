@@ -198,6 +198,7 @@ export default class PSMenu extends Vue {
     api.label.deleteLabel(this.labelForm.id).then((res: any) => {
       if (res.statusCode === STATUS_CODE.SUCCESS) {
         Notification.success('删除成功');
+        this.$emit('refreshAllList');
         this.handleQueryLabel();
       } else {
         Notification.warning('删除失败');
@@ -212,6 +213,7 @@ export default class PSMenu extends Vue {
       if (res.statusCode === STATUS_CODE.SUCCESS) {
         this.handleQueryLabel();
         Notification.success('更新标签成功');
+        this.$emit('refreshAllList');
         this.editingIndex = -1;
       } else {
         Notification.warning('更新失败');

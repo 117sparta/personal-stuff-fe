@@ -312,6 +312,7 @@ export default class CardModal extends Vue {
     const isDelete = !!item.isSelected;
     api.card.attachLabel(this.card.id, item.id, isDelete).then((res: any) => {
       if (res.statusCode === STATUS_CODE.SUCCESS) {
+        this.$emit('refreshSingleList', this.card.listId);
         this.handleQueryCardInfo(true);
       }
     });

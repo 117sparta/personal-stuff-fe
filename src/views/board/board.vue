@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%; background-color: #ffffe5;position: relative;">
     <board-header :item="board" @refreshBoard="handleGetBoardInfo" @show-menu="handleShowMenu"></board-header>
-    <main :style="`height: 91%;overflow: auto; white-space: nowrap;${showMenu ? 'padding-right: 420px;' : 'padding-right: 20px;'}`">
+    <main :style="`height: 86%;overflow: auto; white-space: nowrap;${showMenu ? 'padding-right: 420px;' : 'padding-right: 20px;'}`">
       <div style="height: 94%; display: inline-block; vertical-align: top;">
         <draggable
           tag="div"
@@ -29,6 +29,7 @@
     <ps-menu v-show="showMenu" @close-menu="handleCloseMenu" :board-id="board.id"
       :has-get-all-lists="hasGetAllLists"
       @searchCard="handleSearchCard($event)"
+      @refreshAllList="handleGetBoardList"
       @showAllList="handleGetBoardList"></ps-menu>
   </div>
 </template>
