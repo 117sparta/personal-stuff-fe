@@ -34,14 +34,19 @@ export default class BoardItem extends Vue {
   }) item;
 
   handleDeleteBoard () {
-    this.item.id && api.board.deleteBoard(this.item.id).then(() => {
-      this.$emit('on-delete');
-    }).catch(err => {
-      Notification.error({
-        title: '错误',
-        message: err.message
+    this.$confirm('确定删除这个看板吗？', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then(() => {
+      this.item.id && api.board.deleteBoard(this.item.id).then(() => {
+        this.$emit('on-delete');
+      }).catch(err => {
+        Notification.error({
+          title: '错误',
+          message: err.message
+        });
       });
-    });
+    }).catch(() => false);
   }
 
   handleEditBoard () {

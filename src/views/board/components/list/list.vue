@@ -162,9 +162,14 @@ export default class BoardList extends Vue {
   }
 
   handleDeleteList () {
-    api.list.deleteList(this.list.id).then(() => {
-      this.$parent.$emit('refreshList');
-    });
+    this.$confirm('确定删除这个列表吗？', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then(() => {
+      api.list.deleteList(this.list.id).then(() => {
+        this.$parent.$emit('refreshList');
+      });
+    }).catch(() => false);
   }
 }
 </script>

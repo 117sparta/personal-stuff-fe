@@ -23,11 +23,14 @@
       <draggable v-model="list.stuffListItems" @change="handleStuffListItemOrderChanged">
         <div class="stuff-list-checkbox" v-for="(item, index) in list.stuffListItems" :key="item.id">
           <div
+            v-show="editingIndex !== index"
             :class="['stuff-list-checkbox-left', (item.isChecked ? 'stuff-list-checkbox-left-active' : '')]"
             @click="handleCheckboxClicked($event, list, index)"
           >{{item.isChecked ? '✔' : ''}}</div>
-          <div :class="`stuff-list-checkbox-right ${item.isChecked ? 'stuff-list-checkbox-right-active' : ''}`">{{item.text}}
-            <span class="el-icon-delete stuff-list-checkbox-right-delete" size="mini" @click.stop="handleDeleteStuffListItem($event, item)"></span>
+          <div :class="`stuff-list-checkbox-right ${item.isChecked ? 'stuff-list-checkbox-right-active' : ''}`">
+            <el-input v-if="editingIndex === index" :ref="`stuff-list-item-input-${index}`" type="textarea" size="mini" v-model="editingStuffListItemTxt" maxlength="36" :rows="1" show-word-limit @keydown.native.enter="handleUpdateStuffListItem($event, list, index)" @blur="handleCancelUpdateStuffListItem"></el-input>
+            <div v-else @click.stop="handleEditStuffListItemText($event, index)">{{item.text}}</div>
+            <span v-show="editingIndex !== index" class="el-icon-delete stuff-list-checkbox-right-delete" size="mini" @click.stop="handleDeleteStuffListItem($event, item)"></span>
           </div>
         </div>
       </draggable>
@@ -66,6 +69,8 @@ export default class StuffListItem extends Vue {
   newStuffListItemText: string = '';
   showTitleInput: boolean = false;
   originalContent: string = '';
+  editingIndex: number = -1;
+  editingStuffListItemTxt = '';
 
   @Watch('list', {
     immediate: true
@@ -165,6 +170,35 @@ export default class StuffListItem extends Vue {
   handleCancelUpdateTitle () {
     this.list.title = this.originalContent;
     this.showTitleInput = false;
+  }
+
+  handleEditStuffListItemText (_, index) {
+    this.editingStuffListItemTxt = this.list.stuffListItems[index].text;
+    this.editingIndex = index;
+    this.$nextTick(() => {
+      const stuffListInput: any = this.$refs[`stuff-list-item-input-${index}`][0];
+      if (stuffListInput) {
+        stuffListInput.focus();
+      }
+    });
+  }
+
+  handleUpdateStuffListItem (_, list, index) {
+    const item = list.stuffListItems[index];
+    item.text = this.editingStuffListItemTxt;
+    api.stuffList.updateStuffListItems([item]).then(() => {
+      this.editingIndex = -1;
+      this.editingStuffListItemTxt = '';
+      this.$emit('refreshCard');
+    }).catch(err => {
+      Notification.error('更新清单项失败');
+      console.log(err);
+    });
+  }
+
+  handleCancelUpdateStuffListItem () {
+    this.editingStuffListItemTxt = '';
+    this.editingIndex = -1;
   }
 }
 </script>

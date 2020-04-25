@@ -97,9 +97,14 @@ export default class StuffCard extends Vue {
   }
 
   handleDeleteCard () {
-    api.card.deleteCard(this.card.id).then(() => {
-      eventBus.$emit('refreshSingleList', this.card.listId);
-    });
+    this.$confirm('确定删除这个卡片吗？', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then(() => {
+      api.card.deleteCard(this.card.id).then(() => {
+        eventBus.$emit('refreshSingleList', this.card.listId);
+      });
+    }).catch(() => false);
   }
 }
 </script>
