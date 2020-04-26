@@ -195,17 +195,22 @@ export default class PSMenu extends Vue {
   }
 
   handleDeleteLabel () {
-    api.label.deleteLabel(this.labelForm.id).then((res: any) => {
-      if (res.statusCode === STATUS_CODE.SUCCESS) {
-        Notification.success('删除成功');
-        this.$emit('refreshAllList');
-        this.handleQueryLabel();
-      } else {
-        Notification.warning('删除失败');
-      }
-    }).catch(() => {
-      Notification.error('删除失败');
-    });
+    this.$confirm('你确定要删除这个标签吗？删除后无法恢复', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then(() => {
+      api.label.deleteLabel(this.labelForm.id).then((res: any) => {
+        if (res.statusCode === STATUS_CODE.SUCCESS) {
+          Notification.success('删除成功');
+          this.$emit('refreshAllList');
+          this.handleQueryLabel();
+        } else {
+          Notification.warning('删除失败');
+        }
+      }).catch(() => {
+        Notification.error('删除失败');
+      });
+    }).catch(() => false);
   }
 
   handleUpdateLabel () {

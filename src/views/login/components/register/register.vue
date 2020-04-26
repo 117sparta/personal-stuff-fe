@@ -146,6 +146,12 @@ export default class Register extends Vue {
                 duration: 0
               });
               this.step += 1;
+            } else if (res.statusCode === STATUS_CODE.REGISTER_USER_EXISTED) {
+              Notification.warning({
+                title: '邮箱已经被注册',
+                message: '',
+                duration: 5000
+              });
             } else {
               Notification.warning({
                 title: '验证码发送失败',

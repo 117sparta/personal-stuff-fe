@@ -137,12 +137,17 @@ export default class StuffListItem extends Vue {
   }
 
   handleDeleteStuffList () {
-    api.stuffList.deleteStuffList(this.list.id).then(() => {
-      this.$emit('refreshCard');
-    }).catch(err => {
-      Notification.error('删除清单失败');
-      console.log(err);
-    });
+    this.$confirm('你确定要删除这个清单吗？', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消'
+    }).then(() => {
+      api.stuffList.deleteStuffList(this.list.id).then(() => {
+        this.$emit('refreshCard');
+      }).catch(err => {
+        Notification.error('删除清单失败');
+        console.log(err);
+      });
+    }).catch(() => false);
   }
 
   handleShowTitleInput () {
