@@ -112,6 +112,12 @@ export default class PSBoard extends Vue {
     });
   }
 
+  beforeDestroy () {
+    eventBus.$off('on-close');
+    eventBus.$off('on-card-click');
+    eventBus.$off('refreshSingleList');
+  }
+
   handleShowAddPanel () {
     this.showAddPanel = true;
   }
